@@ -1,0 +1,67 @@
+// 🎨 Paleta cálida
+$beige: #f5f0e6;
+$crema: #fffaf3;
+$marron: #8b5e3c;
+$marron-oscuro: #5c3a21;
+$gris: #6c757d;
+
+.login-container {
+    height: 100vh;
+    background: linear-gradient(135deg, $beige, $crema);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    h2 {
+        color: $marron-oscuro;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        color: $gris;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+}
+
+.form-group {
+    margin-bottom: 15px;
+
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+
+        &:focus {
+            border-color: $marron;
+            box-shadow: 0 0 5px rgba(139, 94, 60, 0.3);
+        }
+    }
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: $marron;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+        background: $marron-oscuro;
+    }
+}
