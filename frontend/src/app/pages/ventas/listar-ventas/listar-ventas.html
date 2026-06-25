@@ -4,8 +4,8 @@
 </div>
 
 <div class="filtros">
-  <input type="text" placeholder="Buscar por cliente..."
-    [(ngModel)]="busqueda" (input)="filtrar()" class="input-busqueda" />
+  <input type="text" placeholder="Buscar por cliente..." [(ngModel)]="busqueda" (input)="filtrar()"
+    class="input-busqueda" />
   <select [(ngModel)]="filtroMetodo" (change)="filtrar()" class="select-filtro">
     <option value="">Todos los métodos</option>
     <option *ngFor="let m of getMetodos()" [value]="m">{{ m }}</option>
@@ -39,7 +39,9 @@
         <td>
           <div class="acciones">
             <button class="btn-ver" (click)="verDetalle(v)">👁 Ver</button>
-            <button class="btn-eliminar" (click)="confirmarEliminar(v)">🗑 Eliminar</button>
+            <button class="btn-eliminar" (click)="confirmarEliminar(v)" *ngIf="esAdmin">
+              🗑 Eliminar
+            </button>
           </div>
         </td>
       </tr>
@@ -100,14 +102,16 @@
   </div>
 </div>
 
-<!-- MODAL ELIMINAR -->
-<div class="overlay-global" *ngIf="modalEliminar">
+<!-- MODAL ELIMINAR - solo admin -->
+<div class="overlay-global" *ngIf="modalEliminar && esAdmin">
   <div class="modal-global modal-small" (click)="$event.stopPropagation()">
     <div class="modal-header-g">
       <h3>¿Eliminar venta?</h3>
     </div>
     <div class="modal-body-g">
-      <p>¿Eliminar la venta <strong>#{{ ventaAEliminar?.id }}</strong> de <strong>{{ ventaAEliminar?.cliente?.nombres }}</strong>?</p>
+      <p>¿Eliminar la venta <strong>#{{ ventaAEliminar?.id }}</strong> de
+        <strong>{{ ventaAEliminar?.cliente?.nombres }}</strong>?
+      </p>
       <p class="advertencia-g">⚠️ Esta acción no se puede deshacer.</p>
     </div>
     <div class="modal-footer-g">

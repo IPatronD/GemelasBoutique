@@ -1,0 +1,460 @@
+$beige: #f5f0e6;
+$crema: #fffaf3;
+$marron: #8b5e3c;
+$marron-oscuro: #5c3a21;
+$gris: #6c757d;
+$verde: #2e7d32;
+$rojo: #e74c3c;
+
+.page-header {
+    margin-bottom: 16px;
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: $marron-oscuro;
+    }
+}
+
+.error-banner {
+    background: #fdecea;
+    color: $rojo;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 12px;
+    color: $gris;
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid $beige;
+        border-top-color: $marron;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.venta-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 16px;
+    align-items: start;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.input-busqueda {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    &:focus {
+        border-color: $marron;
+    }
+}
+
+// PRODUCTOS
+.col-productos {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.tarjeta-producto {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    .producto-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow: hidden;
+    }
+
+    .producto-nombre {
+        font-weight: 600;
+        color: $marron-oscuro;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .producto-categoria {
+        font-size: 11px;
+        color: $gris;
+    }
+
+    .producto-meta {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 2px;
+    }
+
+    .producto-precio {
+        font-weight: 700;
+        color: $marron;
+        font-size: 13px;
+    }
+
+    .producto-stock {
+        font-size: 11px;
+        color: $verde;
+        &.bajo {
+            color: $rojo;
+        }
+    }
+
+    .btn-agregar {
+        background: $marron;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        flex-shrink: 0;
+        &:hover {
+            background: $marron-oscuro;
+        }
+    }
+}
+
+.sin-datos {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: $gris;
+}
+
+// CARRITO
+.col-carrito {
+    position: sticky;
+    top: 0;
+}
+
+.carrito-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: $marron-oscuro;
+    margin-bottom: 12px;
+}
+
+.carrito-vacio {
+    text-align: center;
+    color: $gris;
+    font-size: 13px;
+    padding: 20px 0;
+}
+
+.carrito-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.item-carrito {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid $beige;
+
+    .item-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .item-nombre {
+        font-size: 13px;
+        font-weight: 600;
+        color: $marron-oscuro;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .item-precio {
+        font-size: 11px;
+        color: $gris;
+    }
+
+    .item-controles {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-cant {
+        width: 22px;
+        height: 22px;
+        border: none;
+        border-radius: 6px;
+        background: $beige;
+        color: $marron-oscuro;
+        font-weight: 700;
+        cursor: pointer;
+        &:hover {
+            background: #ede8de;
+        }
+    }
+
+    .item-cantidad {
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 16px;
+        text-align: center;
+    }
+
+    .item-subtotal {
+        font-size: 13px;
+        font-weight: 700;
+        color: $marron;
+        white-space: nowrap;
+    }
+
+    .btn-quitar {
+        background: none;
+        border: none;
+        color: $rojo;
+        cursor: pointer;
+        font-size: 13px;
+        width: auto;
+        padding: 2px;
+    }
+}
+
+hr {
+    border: none;
+    border-top: 1px solid $beige;
+    margin: 14px 0;
+}
+
+.label-seccion {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: $gris;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.seccion-cliente,
+.seccion-metodo,
+.seccion-descuento {
+    margin-bottom: 14px;
+}
+
+.cliente-seleccionado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $beige;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: $marron-oscuro;
+
+    .btn-quitar-cliente {
+        background: none;
+        border: none;
+        color: $rojo;
+        cursor: pointer;
+        width: auto;
+        padding: 2px;
+    }
+}
+
+.buscador-cliente {
+    position: relative;
+}
+
+.lista-clientes {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.opcion-cliente {
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: $marron-oscuro;
+    &:hover {
+        background: $crema;
+    }
+    &.sin-resultado {
+        color: $gris;
+        cursor: default;
+        &:hover {
+            background: white;
+        }
+    }
+}
+
+.btn-nuevo-cliente {
+    margin-top: 8px;
+    width: 100%;
+    background: none;
+    border: 1px dashed $marron;
+    color: $marron;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover {
+        background: $crema;
+    }
+}
+
+.select-metodo,
+.input-descuento {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background: white;
+    &:focus {
+        border-color: $marron;
+    }
+}
+
+.totales {
+    background: $crema;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.fila-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: $marron-oscuro;
+    padding: 4px 0;
+
+    &.total-final {
+        font-size: 16px;
+        font-weight: 700;
+        border-top: 1px solid #e0d5c5;
+        margin-top: 6px;
+        padding-top: 8px;
+    }
+}
+
+.btn-confirmar-venta {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    background: $marron;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover:not(:disabled) {
+        background: $marron-oscuro;
+    }
+    &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+}
+
+// Modal forms
+.label-form {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: $gris;
+    margin: 10px 0 4px;
+    text-transform: uppercase;
+}
+
+.input-form {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background: white;
+    &:focus {
+        border-color: $marron;
+    }
+}
+
+.error-banner-modal {
+    background: #fdecea;
+    color: $rojo;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.total-exito {
+    font-size: 20px;
+    font-weight: 700;
+    color: $marron-oscuro;
+    text-align: center;
+    margin-top: 10px;
+}

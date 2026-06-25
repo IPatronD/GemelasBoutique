@@ -3,6 +3,7 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../../services/producto';
 import { CategoriaService } from '../../../services/categoria';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-listar-productos',
@@ -20,6 +21,7 @@ export class ListarProductos implements OnInit {
   cargando = true;
   busqueda = '';
   filtroCategoria = '';
+  esAdmin = false;
 
   modalFormAbierto = false;
   modalEliminar = false;
@@ -38,11 +40,13 @@ export class ListarProductos implements OnInit {
   constructor(
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
+    private auth: Auth,
     private cdr: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit() {
+    this.esAdmin = this.auth.esAdmin();
     this.cargarCategorias();
     this.cargarProductos();
   }
@@ -108,10 +112,6 @@ export class ListarProductos implements OnInit {
     this.productoSeleccionado = null;
     this.document.body.classList.remove('modal-open');
     this.cdr.detectChanges();
-  }
-
-  getCategoriaSeleccionada(): any {
-    return this.categorias.find(c => c.id == this.form.categoria?.id) || null;
   }
 
   guardar() {

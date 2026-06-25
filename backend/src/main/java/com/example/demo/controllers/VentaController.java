@@ -56,4 +56,9 @@ public class VentaController {
             @RequestParam(defaultValue = "5") int cantidad) {
         return ResponseEntity.ok(service.ultimasVentas(cantidad));
     }
+
+    @GetMapping("/hoy")
+    public ResponseEntity<List<Venta>> ventasDeHoy() {
+        return ResponseEntity.ok(service.ventasDeHoy());
+    }
 }

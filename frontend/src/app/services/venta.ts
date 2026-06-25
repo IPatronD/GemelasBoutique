@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class VentaService {
   private api = 'http://localhost:8080/api/ventas';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   listar(): Observable<any[]> {
     return this.http.get<any[]>(this.api);
@@ -33,5 +33,10 @@ export class VentaService {
 
   ultimasVentas(cantidad: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/ultimas?cantidad=${cantidad}`);
+  }
+
+  // Caja
+  ventasDeHoy(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/hoy`);
   }
 }

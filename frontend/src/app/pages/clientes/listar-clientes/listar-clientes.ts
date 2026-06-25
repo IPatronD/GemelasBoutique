@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation, Inject } from 
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClienteService } from '../../../services/cliente';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-listar-clientes',
@@ -17,6 +18,8 @@ export class ListarClientes implements OnInit {
   clientesFiltrados: any[] = [];
   cargando = true;
   busqueda = '';
+  esAdmin = false;
+  esVendedora = false;
 
   modalFormAbierto = false;
   modalEliminar = false;
@@ -33,13 +36,18 @@ export class ListarClientes implements OnInit {
     estado: true
   };
 
+  verInactivos = false;
+
   constructor(
     private clienteService: ClienteService,
+    private auth: Auth,
     private cdr: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit() {
+    this.esAdmin = this.auth.esAdmin();
+    this.esVendedora = this.auth.esVendedora();
     this.cargarClientes();
   }
 
@@ -150,8 +158,6 @@ export class ListarClientes implements OnInit {
   soloNumeros(event: KeyboardEvent): boolean {
     return /[0-9]/.test(event.key);
   }
-
-  verInactivos = false;
 
   cambiarVista(inactivos: boolean) {
     this.verInactivos = inactivos;

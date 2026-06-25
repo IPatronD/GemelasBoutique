@@ -1,1 +1,192 @@
-<p>form-venta works!</p>
+<div class="page-header">
+    <h1>Registrar Venta</h1>
+</div>
+
+<div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando productos...</p>
+</div>
+
+<div class="venta-layout" *ngIf="!cargando">
+
+    <!-- COLUMNA IZQUIERDA: PRODUCTOS -->
+    <div class="col-productos">
+
+        <div class="card">
+            <input type="text" placeholder="🔍 Buscar producto por nombre o categoría..." [(ngModel)]="busquedaProducto"
+                (input)="filtrarProductos()" class="input-busqueda" />
+        </div>
+
+        <div class="grid-productos">
+            <div class="tarjeta-producto" *ngFor="let p of productosFiltrados">
+                <div class="producto-info">
+                    <span class="producto-nombre">{{ p.nombre }}</span>
+                    <span class="producto-categoria">{{ p.categoria?.nombre || 'Sin categoría' }}</span>
+                    <div class="producto-meta">
+                        <span class="producto-precio">S/ {{ p.precio | number:'1.2-2' }}</span>
+                        <span class="producto-stock" [class.bajo]="p.stock <= 5">Stock: {{ p.stock }}</span>
+                    </div>
+                </div>
+                <button class="btn-agregar" (click)="agregarAlCarrito(p)">+</button>
+            </div>
+
+            <div class="sin-datos" *ngIf="productosFiltrados.length === 0">
+                No se encontraron productos
+            </div>
+        </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: CARRITO -->
+    <div class="col-carrito">
+
+        <div class="card carrito-card">
+
+            <h3>🛒 Carrito ({{ carrito.length }})</h3>
+
+            <div class="carrito-vacio" *ngIf="carrito.length === 0">
+                Agrega productos para iniciar la venta
+            </div>
+
+            <div class="carrito-items" *ngIf="carrito.length > 0">
+                <div class="item-carrito" *ngFor="let item of carrito">
+                    <div class="item-info">
+                        <span class="item-nombre">{{ item.nombre }}</span>
+                        <span class="item-precio">S/ {{ item.precio | number:'1.2-2' }} c/u</span>
+                    </div>
+                    <div class="item-controles">
+                        <button class="btn-cant" (click)="decrementar(item)">−</button>
+                        <span class="item-cantidad">{{ item.cantidad }}</span>
+                        <button class="btn-cant" (click)="incrementar(item)">+</button>
+                    </div>
+                    <span class="item-subtotal">S/ {{ getSubtotalItem(item) | number:'1.2-2' }}</span>
+                    <button class="btn-quitar" (click)="quitarDelCarrito(item)">✕</button>
+                </div>
+            </div>
+
+            <hr *ngIf="carrito.length > 0">
+
+            <!-- CLIENTE -->
+            <div class="seccion-cliente" *ngIf="carrito.length > 0">
+                <label class="label-seccion">Cliente</label>
+
+                <div class="cliente-seleccionado" *ngIf="clienteSeleccionado">
+                    <span>👤 {{ clienteSeleccionado.nombres }} — {{ clienteSeleccionado.documento }}</span>
+                    <button class="btn-quitar-cliente" (click)="quitarCliente()">✕</button>
+                </div>
+
+                <div class="buscador-cliente" *ngIf="!clienteSeleccionado">
+                    <input type="text" placeholder="Buscar cliente por nombre o documento..."
+                        [(ngModel)]="busquedaCliente" (input)="buscarClientes()" class="input-busqueda" />
+                    <div class="lista-clientes" *ngIf="mostrarListaClientes">
+                        <div class="opcion-cliente" *ngFor="let c of clientesFiltrados" (click)="seleccionarCliente(c)">
+                            {{ c.nombres }} — {{ c.documento }}
+                        </div>
+                        <div class="opcion-cliente sin-resultado" *ngIf="clientesFiltrados.length === 0">
+                            Sin resultados
+                        </div>
+                    </div>
+                    <button class="btn-nuevo-cliente" (click)="abrirNuevoCliente()">+ Nuevo cliente</button>
+                </div>
+            </div>
+
+            <!-- MÉTODO DE PAGO -->
+            <div class="seccion-metodo" *ngIf="carrito.length > 0">
+                <label class="label-seccion">Método de Pago</label>
+                <select [(ngModel)]="metodoPagoId" class="select-metodo">
+                    <option [ngValue]="null">Selecciona un método</option>
+                    <option *ngFor="let m of metodosPago" [ngValue]="m.id">{{ m.nombre }}</option>
+                </select>
+            </div>
+
+            <!-- DESCUENTO GLOBAL -->
+            <div class="seccion-descuento" *ngIf="carrito.length > 0">
+                <label class="label-seccion">Descuento global (%)</label>
+                <input type="number" min="0" max="100" [(ngModel)]="descuentoGlobalPorcentaje"
+                    class="input-descuento" />
+            </div>
+
+            <!-- TOTALES -->
+            <div class="totales" *ngIf="carrito.length > 0">
+                <div class="fila-total">
+                    <span>Subtotal</span>
+                    <span>S/ {{ getSubtotalNeto() | number:'1.2-2' }}</span>
+                </div>
+                <div class="fila-total" *ngIf="descuentoGlobalPorcentaje > 0">
+                    <span>Desc. global ({{ descuentoGlobalPorcentaje }}%)</span>
+                    <span>- S/ {{ getDescuentoGlobalMonto() | number:'1.2-2' }}</span>
+                </div>
+                <div class="fila-total">
+                    <span>IVA (16%)</span>
+                    <span>S/ {{ getIva() | number:'1.2-2' }}</span>
+                </div>
+                <div class="fila-total total-final">
+                    <span>TOTAL</span>
+                    <span>S/ {{ getTotal() | number:'1.2-2' }}</span>
+                </div>
+            </div>
+
+            <button class="btn-confirmar-venta" [disabled]="!puedeGuardar()" (click)="confirmarVenta()"
+                *ngIf="carrito.length > 0">
+                {{ guardando ? 'Guardando...' : 'Confirmar Venta' }}
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL NUEVO CLIENTE -->
+<div class="overlay-global" *ngIf="modalNuevoCliente" (click)="cerrarNuevoCliente()">
+    <div class="modal-global" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>Nuevo Cliente</h3>
+            <button class="btn-cerrar-g" (click)="cerrarNuevoCliente()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="error-banner-modal" *ngIf="errorNuevoCliente">{{ errorNuevoCliente }}</div>
+
+            <label class="label-form">Tipo</label>
+            <select [(ngModel)]="formNuevoCliente.tipo" class="input-form">
+                <option value="Natural">Natural</option>
+                <option value="Jurídico">Jurídico</option>
+            </select>
+
+            <label class="label-form">Nombres</label>
+            <input type="text" [(ngModel)]="formNuevoCliente.nombres" class="input-form" />
+
+            <label class="label-form">Documento</label>
+            <input type="text" [(ngModel)]="formNuevoCliente.documento" class="input-form" />
+
+            <label class="label-form">Teléfono</label>
+            <input type="text" [(ngModel)]="formNuevoCliente.telefono" class="input-form" />
+
+            <label class="label-form">Correo</label>
+            <input type="email" [(ngModel)]="formNuevoCliente.correo" class="input-form" />
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarNuevoCliente()">Cancelar</button>
+            <button class="btn-confirmar-g" (click)="guardarNuevoCliente()">Guardar Cliente</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ÉXITO -->
+<div class="overlay-global" *ngIf="modalExito">
+    <div class="modal-global modal-small">
+        <div class="modal-header-g exito">
+            <h3>✅ Venta registrada</h3>
+        </div>
+        <div class="modal-body-g">
+            <p>Venta <strong>#{{ ventaCreada?.id }}</strong> registrada correctamente.</p>
+            <p class="total-exito">Total: S/ {{ ventaCreada?.total | number:'1.2-2' }}</p>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarExitoYNueva()">Nueva Venta</button>
+            <button class="btn-confirmar-g" (click)="irACaja()">Ver Caja del Día</button>
+        </div>
+    </div>
+</div>

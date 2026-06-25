@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { DOCUMENT, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../../services/venta';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-listar-ventas',
@@ -23,14 +23,17 @@ export class ListarVentas implements OnInit {
   modalAbierto = false;
   modalEliminar = false;
   ventaAEliminar: any = null;
+  esAdmin = false;
 
   constructor(
     private ventaService: VentaService,
+    private auth: Auth,
     private cdr: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document
-  ) {}
+  ) { }
 
   ngOnInit() {
+    this.esAdmin = this.auth.esAdmin();
     this.cargarVentas();
   }
 

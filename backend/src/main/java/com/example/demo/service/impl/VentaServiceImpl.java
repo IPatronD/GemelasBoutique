@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.models.Usuario;
 import com.example.demo.models.Venta;
 import com.example.demo.dto.ResumenDashboardDTO;
 import com.example.demo.models.DetalleVenta;
@@ -7,8 +8,10 @@ import com.example.demo.models.Producto;
 import com.example.demo.repository.VentaRepository;
 import com.example.demo.repository.ClienteRepository;
 import com.example.demo.repository.ProductoRepository;
+import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.VentaService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,17 +22,17 @@ import java.util.List;
 public class VentaServiceImpl implements VentaService {
 
     private final VentaRepository repository;
-    private final ProductoRepository productoRepository; // ← mueve aquí
+    private final ProductoRepository productoRepository;
     private final ClienteRepository clienteRepository;
+    private final UsuarioRepository usuarioRepository; // ← nuevo
 
     public VentaServiceImpl(VentaRepository repository, ProductoRepository productoRepository,
-            ClienteRepository clienteRepository) {
+            ClienteRepository clienteRepository, UsuarioRepository usuarioRepository) { // ← nuevo
         this.repository = repository;
         this.productoRepository = productoRepository;
-        this.clienteRepository = clienteRepository; // ← por constructor
+        this.clienteRepository = clienteRepository;
+        this.usuarioRepository = usuarioRepository; // ← nuevo
     }
-
-    // Elimina el @Autowired suelto
 
     @Override
     public List<Venta> listar() {
@@ -39,9 +42,17 @@ public class VentaServiceImpl implements VentaService {
     @Override
     @Transactional
     public Venta guardar(Venta venta) {
+
         if (venta.getFecha() == null) {
             venta.setFecha(LocalDateTime.now());
         }
+
+        // Asignar automáticamente el usuario autenticado (vendedora/admin que hace la
+        // venta)
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuarioAutenticado = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario autenticado no encontrado"));
+        venta.setUsuario(usuarioAutenticado);
 
         double subtotalBrutoAcumulado = 0.0;
         double totalDescItemsAcumulado = 0.0;
@@ -49,81 +60,92 @@ public class VentaServiceImpl implements VentaService {
         if (venta.getDescuentoGlobalPorcentaje() == null) {
             venta.setDescuentoGlobalPorcentaje(0.0);
         }
-
         if (venta.getTasaIva() == null) {
-            venta.setTasaIva(16.0); // 16% de IVA por defecto
+            venta.setTasaIva(16.0);
         }
 
-        if (venta.getDetalles() != null) {
-            for (DetalleVenta detalle : venta.getDetalles()) {
-                if (detalle.getProducto() == null || detalle.getProducto().getId() == null) {
-                    throw new IllegalArgumentException("Cada detalle de venta debe tener un producto válido.");
-                }
+        if (venta.getDetalles() == null || venta.getDetalles().isEmpty()) {
+            throw new IllegalArgumentException("La venta debe tener al menos un producto.");
+        }
 
-                // 1. Obtener precio oficial desde la base de datos
-                Producto producto = productoRepository.findById(detalle.getProducto().getId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Producto no encontrado con ID: " + detalle.getProducto().getId()));
+        for (DetalleVenta detalle : venta.getDetalles()) {
 
-                // 2. Asignar el precio real
-                detalle.setPrecio(producto.getPrecio());
-
-                // 3. Asignar porcentaje de descuento por ítem (por defecto 0.0 si es nulo)
-                if (detalle.getDescuentoPorcentaje() == null) {
-                    detalle.setDescuentoPorcentaje(0.0);
-                }
-
-                // 4. Calcular subtotal por ítem: cantidad * precio
-                double subtotalItem = detalle.getCantidad() * producto.getPrecio();
-                detalle.setSubtotal(Math.round(subtotalItem * 100.0) / 100.0);
-
-                // 5. Calcular descuento por ítem
-                double descItem = subtotalItem * (detalle.getDescuentoPorcentaje() / 100.0);
-                detalle.setDescuentoMonto(Math.round(descItem * 100.0) / 100.0);
-
-                // 6. Calcular neto por ítem: subtotal - descuentoMonto
-                double netoItem = detalle.getSubtotal() - detalle.getDescuentoMonto();
-                detalle.setNeto(Math.round(netoItem * 100.0) / 100.0);
-
-                // 7. Acumular totales
-                subtotalBrutoAcumulado += detalle.getSubtotal();
-                totalDescItemsAcumulado += detalle.getDescuentoMonto();
-
-                // Estructurar relación bidireccional
-                detalle.setVenta(venta);
+            if (detalle.getProducto() == null || detalle.getProducto().getId() == null) {
+                throw new IllegalArgumentException("Cada detalle de venta debe tener un producto válido.");
             }
+
+            if (detalle.getCantidad() <= 0) {
+                throw new IllegalArgumentException("La cantidad debe ser mayor a 0.");
+            }
+
+            // 1. Obtener producto desde la BD
+            Producto producto = productoRepository.findById(detalle.getProducto().getId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Producto no encontrado con ID: " + detalle.getProducto().getId()));
+
+            // 2. Validar stock disponible ANTES de descontar nada
+            if (producto.getStock() < detalle.getCantidad()) {
+                throw new IllegalArgumentException(
+                        "Stock insuficiente para '" + producto.getNombre() +
+                                "'. Disponible: " + producto.getStock() +
+                                ", solicitado: " + detalle.getCantidad());
+            }
+
+            // 3. Descontar stock y guardar
+            producto.setStock(producto.getStock() - detalle.getCantidad());
+            productoRepository.save(producto);
+
+            // 4. Asignar el precio real
+            detalle.setPrecio(producto.getPrecio());
+
+            // 5. Porcentaje de descuento por ítem
+            if (detalle.getDescuentoPorcentaje() == null) {
+                detalle.setDescuentoPorcentaje(0.0);
+            }
+
+            // 6. Subtotal por ítem
+            double subtotalItem = detalle.getCantidad() * producto.getPrecio();
+            detalle.setSubtotal(Math.round(subtotalItem * 100.0) / 100.0);
+
+            // 7. Descuento por ítem
+            double descItem = subtotalItem * (detalle.getDescuentoPorcentaje() / 100.0);
+            detalle.setDescuentoMonto(Math.round(descItem * 100.0) / 100.0);
+
+            // 8. Neto por ítem
+            double netoItem = detalle.getSubtotal() - detalle.getDescuentoMonto();
+            detalle.setNeto(Math.round(netoItem * 100.0) / 100.0);
+
+            // 9. Acumular
+            subtotalBrutoAcumulado += detalle.getSubtotal();
+            totalDescItemsAcumulado += detalle.getDescuentoMonto();
+
+            detalle.setVenta(venta);
         }
 
-        // Redondear acumuladores iniciales
         double subtotalBrutoFinal = Math.round(subtotalBrutoAcumulado * 100.0) / 100.0;
         double totalDescItemsFinal = Math.round(totalDescItemsAcumulado * 100.0) / 100.0;
         double subtotalNetoFinal = Math.round((subtotalBrutoFinal - totalDescItemsFinal) * 100.0) / 100.0;
 
-        // Descuento global
         double descGlobal = subtotalNetoFinal * (venta.getDescuentoGlobalPorcentaje() / 100.0);
         double descGlobalFinal = Math.round(descGlobal * 100.0) / 100.0;
 
-        // Base Imponible: subtotalNeto - descuentoGlobal
         double baseImponibleFinal = Math.round((subtotalNetoFinal - descGlobalFinal) * 100.0) / 100.0;
         if (baseImponibleFinal < 0) {
             baseImponibleFinal = 0.0;
         }
 
-        // IVA 16%: baseImponible * (tasaIva / 100)
         double calculoIva = baseImponibleFinal * (venta.getTasaIva() / 100.0);
         double calculoIvaFinal = Math.round(calculoIva * 100.0) / 100.0;
 
-        // Total Final = Base Imponible + IVA
         double totalFinal = baseImponibleFinal + calculoIvaFinal;
         double totalFinalRedondeado = Math.round(totalFinal * 100.0) / 100.0;
 
-        // Guardar valores calculados en la entidad
         venta.setSubtotalBruto(subtotalBrutoFinal);
         venta.setTotalDescItems(totalDescItemsFinal);
         venta.setSubtotalNeto(subtotalNetoFinal);
-        venta.setDescuento(descGlobalFinal); // Guarda en 'descuento' (monto global)
+        venta.setDescuento(descGlobalFinal);
         venta.setBaseImponible(baseImponibleFinal);
-        venta.setSubtotal(baseImponibleFinal); // Compatibilidad con 'subtotal' anterior
+        venta.setSubtotal(baseImponibleFinal);
         venta.setIva(calculoIvaFinal);
         venta.setTotal(totalFinalRedondeado);
 
@@ -195,7 +217,6 @@ public class VentaServiceImpl implements VentaService {
         return repository.contarVentas();
     }
 
-    
     @Override
     public ResumenDashboardDTO obtenerResumenDashboard(int anio) {
 
@@ -275,5 +296,12 @@ public class VentaServiceImpl implements VentaService {
     public List<Venta> ultimasVentas(int cantidad) {
         return repository.ultimasVentas(
                 org.springframework.data.domain.PageRequest.of(0, cantidad));
+    }
+
+    @Override
+    public List<Venta> ventasDeHoy() {
+        LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
+        LocalDateTime finDia = inicioDia.plusDays(1);
+        return repository.ventasDeHoy(inicioDia, finDia);
     }
 }

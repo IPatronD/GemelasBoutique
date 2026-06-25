@@ -35,4 +35,6 @@ public interface VentaService {
     ResumenDashboardDTO obtenerResumenDashboard(int anio);
 
     List<Venta> ultimasVentas(int cantidad);
+
+    List<Venta> ventasDeHoy();
 }

@@ -20,7 +20,7 @@ public class DetalleVenta {
 
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonBackReference
     // Muchos detalles pertenecen a una venta
     private Venta venta;
 

@@ -1,0 +1,49 @@
+<div class="page-header">
+    <h1>💰 Caja del Día</h1>
+    <button class="btn-nueva-venta" (click)="irANuevaVenta()">+ Nueva Venta</button>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando ventas del día...</p>
+</div>
+
+<div *ngIf="!cargando">
+
+    <div class="tarjetas-resumen">
+        <div class="tarjeta">
+            <span class="tarjeta-valor">S/ {{ getTotalDia() | number:'1.2-2' }}</span>
+            <span class="tarjeta-label">Total Vendido Hoy</span>
+        </div>
+        <div class="tarjeta">
+            <span class="tarjeta-valor">{{ getCantidadVentas() }}</span>
+            <span class="tarjeta-label">Ventas Realizadas</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Detalle de Ventas de Hoy</h3>
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Cliente</th>
+                    <th>Método</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let v of ventas">
+                    <td>{{ formatFecha(v.fecha) }}</td>
+                    <td>{{ v.cliente?.nombres || 'Sin cliente' }}</td>
+                    <td><span class="metodo-badge">{{ v.metodoPago?.nombre || '-' }}</span></td>
+                    <td><strong>S/ {{ v.total | number:'1.2-2' }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="sin-datos" *ngIf="ventas.length === 0">
+            Aún no se han registrado ventas hoy
+        </div>
+    </div>
+
+</div>

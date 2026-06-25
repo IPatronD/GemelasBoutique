@@ -28,7 +28,7 @@ export class Login {
         } else if (res.rol === 'ROLE_SUPERVISORA') {
           this.router.navigate(['/supervisora/dashboard']);
         } else if (res.rol === 'ROLE_VENDEDORA') {
-          this.router.navigate(['/vendedora/dashboard']);
+          this.router.navigate(['/vendedora/ventas/nueva']);
         } else {
           this.error = 'Rol no reconocido';
         }

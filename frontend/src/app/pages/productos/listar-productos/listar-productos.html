@@ -1,7 +1,9 @@
 <div class="page-header">
     <h1>Productos</h1>
     <span class="badge">{{ productosFiltrados.length }} registros</span>
-    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Producto</button>
+    <button class="btn-nuevo" (click)="abrirNuevo()" *ngIf="esAdmin">
+        + Nuevo Producto
+    </button>
 </div>
 
 <div class="filtros">
@@ -47,8 +49,11 @@
                 </td>
                 <td>
                     <div class="acciones">
-                        <button class="btn-editar" (click)="abrirEditar(p)">✏️ Editar</button>
-                        <button class="btn-eliminar" (click)="confirmarEliminar(p)">🗑 Eliminar</button>
+                        <button class="btn-editar" (click)="abrirEditar(p)" *ngIf="esAdmin">✏️ Editar</button>
+                        <span class="sin-accion" *ngIf="!esAdmin">Solo lectura</span>
+                        <button class="btn-eliminar" (click)="confirmarEliminar(p)" *ngIf="esAdmin">
+                            🗑 Eliminar
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -103,7 +108,7 @@
 </div>
 
 <!-- MODAL ELIMINAR -->
-<div class="overlay-global" *ngIf="modalEliminar">
+<div class="overlay-global" *ngIf="modalEliminar && esAdmin">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
             <h3>¿Eliminar producto?</h3>

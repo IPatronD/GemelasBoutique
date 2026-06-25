@@ -1,0 +1,62 @@
+<div class="layout">
+
+    <aside class="sidebar" [class.cerrado]="!menuAbierto">
+
+        <div class="sidebar-logo">
+            <span class="logo-icon">👗</span>
+            <span class="logo-texto" *ngIf="menuAbierto">Gemelas Boutique</span>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-seccion" *ngIf="menuAbierto">VENTAS</div>
+            <a class="nav-item" (click)="navegarA('/vendedora/ventas/nueva')">
+                <span class="nav-icon">🛒</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Registrar Venta</span>
+            </a>
+            <a class="nav-item" (click)="navegarA('/vendedora/caja')">
+                <span class="nav-icon">💰</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Caja del Día</span>
+            </a>
+
+            <div class="nav-seccion" *ngIf="menuAbierto">CONSULTA</div>
+            <a class="nav-item" (click)="navegarA('/vendedora/productos')">
+                <span class="nav-icon">📦</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Productos</span>
+            </a>
+            <a class="nav-item" (click)="navegarA('/vendedora/clientes')">
+                <span class="nav-icon">👥</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Clientes</span>
+            </a>
+
+            <div class="nav-seccion" *ngIf="menuAbierto">CUENTA</div>
+            <a class="nav-item" (click)="navegarA('/vendedora/perfil')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Mi Perfil</span>
+            </a>
+            <a class="nav-item logout" (click)="logout()">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-texto" *ngIf="menuAbierto">Cerrar Sesión</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <div class="contenido">
+
+        <header class="topbar">
+            <button class="btn-toggle" (click)="toggleMenu()">☰</button>
+            <span class="topbar-titulo">Panel Vendedora</span>
+            <div class="topbar-usuario">
+                <span>👗 Gemelas Boutique</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <router-outlet />
+        </main>
+
+    </div>
+
+</div>

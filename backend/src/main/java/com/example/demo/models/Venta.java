@@ -57,6 +57,6 @@ public class Venta {
     private MetodoPago metodoPago;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<DetalleVenta> detalles;
 }

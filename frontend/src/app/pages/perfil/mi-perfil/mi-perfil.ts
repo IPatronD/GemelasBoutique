@@ -153,9 +153,18 @@ export class MiPerfil implements OnInit {
 
         this.usuarioService.actualizar(this.perfil.id, payloadUsuario).subscribe({
           next: () => {
-            this.cargarPerfil();
             this.exitoEditar = true;
             this.cdr.detectChanges();
+
+            // Si cambió el username, cerrar sesión para que vuelva a loguearse
+            if (this.formEditar.username !== this.perfil.username) {
+              setTimeout(() => {
+                alert('Username actualizado. Por seguridad, vuelve a iniciar sesión.');
+                this.auth.logout();
+              }, 1500);
+            } else {
+              this.cargarPerfil();
+            }
           },
           error: () => {
             this.errorEditar = 'Error al actualizar username.';

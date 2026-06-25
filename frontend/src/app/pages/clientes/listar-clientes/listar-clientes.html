@@ -1,7 +1,7 @@
 <div class="page-header">
     <h1>Clientes</h1>
     <span class="badge">{{ clientesFiltrados.length }} registros</span>
-    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Cliente</button>
+    <button class="btn-nuevo" (click)="abrirNuevo()" *ngIf="esAdmin || esVendedora">+ Nuevo Cliente</button>
 </div>
 
 <div class="filtros">
@@ -49,11 +49,19 @@
                 <td>
                     <div class="acciones">
                         <ng-container *ngIf="c.estado">
-                            <button class="btn-editar" (click)="abrirEditar(c)">✏️ Editar</button>
-                            <button class="btn-eliminar" (click)="confirmarEliminar(c)">🚫 Desactivar</button>
+                            <button class="btn-editar" (click)="abrirEditar(c)" *ngIf="esAdmin">
+                                ✏️ Editar
+                            </button>
+                            <button class="btn-eliminar" (click)="confirmarEliminar(c)" *ngIf="esAdmin">
+                                🚫 Desactivar
+                            </button>
+                            <span class="sin-accion" *ngIf="!esAdmin">Solo lectura</span>
                         </ng-container>
                         <ng-container *ngIf="!c.estado">
-                            <button class="btn-activar" (click)="activar(c)">✅ Activar</button>
+                            <button class="btn-activar" (click)="activar(c)" *ngIf="esAdmin">
+                                ✅ Activar
+                            </button>
+                            <span class="sin-accion" *ngIf="!esAdmin">Inactivo</span>
                         </ng-container>
                     </div>
                 </td>
