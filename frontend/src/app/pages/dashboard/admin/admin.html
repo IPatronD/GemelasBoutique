@@ -1,0 +1,167 @@
+<!-- CARGANDO -->
+<div class="cargando" *ngIf="cargando">
+  <div class="spinner"></div>
+  <p>Cargando dashboard...</p>
+</div>
+
+<div *ngIf="!cargando && resumen">
+
+  <!-- TÍTULO -->
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <span class="fecha">{{ anioActual }}</span>
+  </div>
+
+  <!-- TARJETAS MÉTRICAS -->
+  <div class="tarjetas">
+
+    <div class="tarjeta">
+      <div class="tarjeta-icono ventas-hoy">💰</div>
+      <div class="tarjeta-info">
+        <span class="tarjeta-valor">S/ {{ resumen.totalVentasHoy | number:'1.2-2' }}</span>
+        <span class="tarjeta-label">Ventas Hoy</span>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <div class="tarjeta-icono ventas-mes">📈</div>
+      <div class="tarjeta-info">
+        <span class="tarjeta-valor">S/ {{ resumen.totalVentasMes | number:'1.2-2' }}</span>
+        <span class="tarjeta-label">Ventas del Mes</span>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <div class="tarjeta-icono clientes">👥</div>
+      <div class="tarjeta-info">
+        <span class="tarjeta-valor">{{ resumen.totalClientes }}</span>
+        <span class="tarjeta-label">Clientes Registrados</span>
+      </div>
+    </div>
+
+    <div class="tarjeta alerta" *ngIf="resumen.productosStockBajo > 0">
+      <div class="tarjeta-icono stock">⚠️</div>
+      <div class="tarjeta-info">
+        <span class="tarjeta-valor">{{ resumen.productosStockBajo }}</span>
+        <span class="tarjeta-label">Stock Bajo</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FILA 2: GRÁFICO + MÉTODOS DE PAGO -->
+  <div class="fila-dos">
+
+    <!-- VENTAS POR MES -->
+    <div class="card grafico">
+      <h3>Ventas por Mes {{ anioActual }}</h3>
+      <div class="barras">
+        <div class="barra-item" *ngFor="let v of resumen.ventasPorMes">
+          <div class="barra-contenedor">
+            <div class="barra-fill" [style.height]="getBarraAncho(v.total)"></div>
+          </div>
+          <span class="barra-mes">{{ getNombreMes(v.mes) }}</span>
+          <span class="barra-valor">S/ {{ v.total | number:'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÉTODOS DE PAGO -->
+    <div class="card metodos">
+      <h3>Métodos de Pago</h3>
+      <div class="metodo-item" *ngFor="let m of resumen.ventasPorMetodoPago">
+        <div class="metodo-info">
+          <span class="metodo-nombre">{{ m.metodo }}</span>
+          <span class="metodo-cantidad">{{ m.cantidad }} ventas</span>
+        </div>
+        <span class="metodo-total">S/ {{ m.total | number:'1.2-2' }}</span>
+      </div>
+      <div class="sin-datos" *ngIf="!resumen.ventasPorMetodoPago?.length">
+        Sin datos
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FILA 3: ÚLTIMAS VENTAS + MÁS VENDIDOS -->
+  <div class="fila-dos">
+
+    <!-- ÚLTIMAS VENTAS -->
+    <div class="card">
+      <h3>Últimas Ventas</h3>
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Método</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of resumen.ultimasVentas">
+            <td>#{{ v.id }}</td>
+            <td>{{ v.cliente }}</td>
+            <td>{{ v.metodoPago }}</td>
+            <td>S/ {{ v.total | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="sin-datos" *ngIf="!resumen.ultimasVentas?.length">
+        Sin ventas registradas
+      </div>
+    </div>
+
+    <!-- MÁS VENDIDOS -->
+    <div class="card">
+      <h3>Productos Más Vendidos</h3>
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of resumen.masVendidos">
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.cantidadVendida }}</td>
+            <td>S/ {{ p.totalGenerado | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="sin-datos" *ngIf="!resumen.masVendidos?.length">
+        Sin datos
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ALERTAS STOCK -->
+  <div class="card" *ngIf="resumen.alertasStock?.length > 0">
+    <h3>⚠️ Alertas de Stock Bajo</h3>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of resumen.alertasStock" class="fila-alerta">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.categoria }}</td>
+          <td><span class="badge-stock">{{ p.stock }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- SIN DATOS -->
+<div class="sin-conexion" *ngIf="!cargando && !resumen">
+  <p>⚠️ No se pudo cargar el dashboard</p>
+</div>

@@ -44,10 +44,10 @@ public class MetodoPagoServiceImpl implements MetodoPagoService {
     public MetodoPago actualizar(Long id, MetodoPago metodoPago) {
 
         MetodoPago existente = repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Método de pago no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Método de pago no encontrado"));
 
         existente.setNombre(metodoPago.getNombre());
+        existente.setDescripcion(metodoPago.getDescripcion());
 
         return repository.save(existente);
     }

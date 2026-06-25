@@ -1,0 +1,266 @@
+$beige: #f5f0e6;
+$crema: #fffaf3;
+$marron: #8b5e3c;
+$marron-oscuro: #5c3a21;
+$gris: #6c757d;
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: $marron-oscuro;
+    }
+
+    .badge {
+        background: $beige;
+        color: $marron;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .btn-nuevo {
+        background: $marron;
+        color: white;
+        border: none;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: auto;
+        transition: 0.2s;
+        &:hover {
+            background: $marron-oscuro;
+        }
+    }
+}
+
+.filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .input-busqueda {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        background: white;
+        &:focus {
+            border-color: $marron;
+        }
+    }
+
+    .select-filtro {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        background: white;
+        cursor: pointer;
+        &:focus {
+            border-color: $marron;
+        }
+    }
+}
+
+.cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 12px;
+    color: $gris;
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid $beige;
+        border-top-color: $marron;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th {
+        text-align: left;
+        padding: 10px 12px;
+        color: $gris;
+        font-weight: 600;
+        border-bottom: 2px solid $beige;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 12px;
+        color: $marron-oscuro;
+        border-bottom: 1px solid $beige;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+    tr:hover td {
+        background: $crema;
+    }
+}
+
+.descripcion {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $gris !important;
+    font-size: 13px;
+}
+
+.id-badge {
+    background: $beige;
+    color: $marron;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.categoria-badge {
+    background: #f3e5d0;
+    color: $marron-oscuro;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stock-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+
+    &.stock-ok {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    &.stock-bajo {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+    &.stock-agotado {
+        background: #fdecea;
+        color: #e74c3c;
+    }
+}
+
+.acciones {
+    display: flex;
+    gap: 8px;
+
+    button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+        width: auto;
+    }
+
+    .btn-editar {
+        background: #e3f2fd;
+        color: #1565c0;
+        &:hover {
+            background: #bbdefb;
+        }
+    }
+
+    .btn-eliminar {
+        background: #fdecea;
+        color: #e74c3c;
+        &:hover {
+            background: #fad7d4;
+        }
+    }
+}
+
+.sin-datos {
+    text-align: center;
+    padding: 30px;
+    color: $gris;
+}
+
+.form-group {
+    margin-bottom: 16px;
+
+    label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: $gris;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        background: white;
+        color: $marron-oscuro;
+        font-family: inherit;
+        resize: vertical;
+        &:focus {
+            border-color: $marron;
+            box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+        }
+    }
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.tabla td {
+    white-space: nowrap;
+}

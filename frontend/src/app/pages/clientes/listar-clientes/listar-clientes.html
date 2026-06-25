@@ -1,1 +1,127 @@
-<p>listar-clientes works!</p>
+<div class="page-header">
+    <h1>Clientes</h1>
+    <span class="badge">{{ clientesFiltrados.length }} registros</span>
+    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Cliente</button>
+</div>
+
+<div class="filtros">
+    <input type="text" placeholder="Buscar por nombre, documento o correo..." [(ngModel)]="busqueda" (input)="filtrar()"
+        class="input-busqueda" />
+</div>
+
+<div class="toggle-estado">
+    <button [class.activo]="!verInactivos" (click)="cambiarVista(false)">Activos</button>
+    <button [class.activo]="verInactivos" (click)="cambiarVista(true)">Inactivos</button>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando clientes...</p>
+</div>
+
+<div class="card" *ngIf="!cargando">
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombres</th>
+                <th>Tipo</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of clientesMostrados()">
+                <td><span class="id-badge">#{{ c.id }}</span></td>
+                <td><strong>{{ c.nombres }}</strong></td>
+                <td>{{ c.tipo }}</td>
+                <td>{{ c.documento }}</td>
+                <td>{{ c.telefono }}</td>
+                <td>{{ c.correo }}</td>
+                <td>
+                    <span class="estado-badge" [class.activo]="c.estado" [class.inactivo]="!c.estado">
+                        {{ c.estado ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="acciones">
+                        <ng-container *ngIf="c.estado">
+                            <button class="btn-editar" (click)="abrirEditar(c)">✏️ Editar</button>
+                            <button class="btn-eliminar" (click)="confirmarEliminar(c)">🚫 Desactivar</button>
+                        </ng-container>
+                        <ng-container *ngIf="!c.estado">
+                            <button class="btn-activar" (click)="activar(c)">✅ Activar</button>
+                        </ng-container>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="sin-datos" *ngIf="clientesMostrados().length === 0">
+        No se encontraron clientes
+    </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
+    <div class="modal-global" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>{{ modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+            <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="form-group">
+                <label>Tipo</label>
+                <select [(ngModel)]="form.tipo">
+                    <option value="">Seleccionar...</option>
+                    <option value="Natural">Natural</option>
+                    <option value="Jurídico">Jurídico</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nombres</label>
+                <input type="text" [(ngModel)]="form.nombres" placeholder="Nombre completo" />
+            </div>
+            <div class="form-group">
+                <label>Documento</label>
+                <input type="text" [(ngModel)]="form.documento" placeholder="DNI o RUC" [readonly]="modoEdicion"
+                    [class.readonly]="modoEdicion" />
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" [(ngModel)]="form.telefono" placeholder="9 dígitos" maxlength="9"
+                    (keypress)="soloNumeros($event)" />
+            </div>
+            <div class="form-group">
+                <label>Correo</label>
+                <input type="email" [(ngModel)]="form.correo" placeholder="correo@ejemplo.com" />
+            </div>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="guardar()">
+                {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DESACTIVAR -->
+<div class="overlay-global" *ngIf="modalEliminar">
+    <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>¿Desactivar cliente?</h3>
+        </div>
+        <div class="modal-body-g">
+            <p>¿Desactivar a <strong>{{ clienteAEliminar?.nombres }}</strong>?</p>
+            <p class="advertencia-g">El cliente quedará inactivo y no podrá realizar compras.</p>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cancelarEliminar()">Cancelar</button>
+            <button class="btn-confirmar-g" (click)="eliminar()">Sí, desactivar</button>
+        </div>
+    </div>
+</div>

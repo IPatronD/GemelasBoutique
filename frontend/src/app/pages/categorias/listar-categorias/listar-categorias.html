@@ -1,0 +1,87 @@
+<div class="page-header">
+    <h1>Categorías</h1>
+    <span class="badge">{{ categoriasFiltradas.length }} registros</span>
+    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nueva Categoría</button>
+</div>
+
+<div class="filtros">
+    <input type="text" placeholder="Buscar por nombre o descripción..." [(ngModel)]="busqueda" (input)="filtrar()"
+        class="input-busqueda" />
+</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando categorías...</p>
+</div>
+
+<div class="card" *ngIf="!cargando">
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of categoriasFiltradas">
+                <td><span class="id-badge">#{{ c.id }}</span></td>
+                <td><strong>{{ c.nombre }}</strong></td>
+                <td class="descripcion">{{ c.descripcion || '—' }}</td>
+                <td>
+                    <div class="acciones">
+                        <button class="btn-editar" (click)="abrirEditar(c)">✏️ Editar</button>
+                        <button class="btn-eliminar" (click)="confirmarEliminar(c)">🗑 Eliminar</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="sin-datos" *ngIf="categoriasFiltradas.length === 0">
+        No se encontraron categorías
+    </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
+    <div class="modal-global" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>{{ modoEdicion ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
+            <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="form.nombre" placeholder="Nombre de la categoría" />
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="form.descripcion" placeholder="Descripción opcional" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="guardar()">
+                {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div class="overlay-global" *ngIf="modalEliminar">
+    <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>¿Eliminar categoría?</h3>
+        </div>
+        <div class="modal-body-g">
+            <p>¿Eliminar <strong>{{ categoriaAEliminar?.nombre }}</strong>?</p>
+            <p class="advertencia-g">⚠️ Si tiene productos asociados, no se podrá eliminar.</p>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cancelarEliminar()">Cancelar</button>
+            <button class="btn-confirmar-g" (click)="eliminar()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>

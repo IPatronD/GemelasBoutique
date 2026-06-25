@@ -124,9 +124,14 @@ public class EmpleadoController {
     // Verificar correo
     @GetMapping("/existe-correo/{correo}")
     public ResponseEntity<Boolean> existeCorreo(
-            @PathVariable String correo) {
+                    @PathVariable String correo) {
 
-        return ResponseEntity.ok(
-                service.existeCorreo(correo));
+            return ResponseEntity.ok(
+                            service.existeCorreo(correo));
+    }
+
+    @GetMapping("/sin-usuario")
+    public ResponseEntity<List<Empleado>> sinUsuario() {
+            return ResponseEntity.ok(service.sinUsuario());
     }
 }

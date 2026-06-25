@@ -1,14 +1,17 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.models.Venta;
+import com.example.demo.dto.ResumenDashboardDTO;
 import com.example.demo.models.DetalleVenta;
 import com.example.demo.models.Producto;
 import com.example.demo.repository.VentaRepository;
+import com.example.demo.repository.ClienteRepository;
 import com.example.demo.repository.ProductoRepository;
 import com.example.demo.service.VentaService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,10 +20,13 @@ public class VentaServiceImpl implements VentaService {
 
     private final VentaRepository repository;
     private final ProductoRepository productoRepository; // ← mueve aquí
+    private final ClienteRepository clienteRepository;
 
-    public VentaServiceImpl(VentaRepository repository, ProductoRepository productoRepository) {
+    public VentaServiceImpl(VentaRepository repository, ProductoRepository productoRepository,
+            ClienteRepository clienteRepository) {
         this.repository = repository;
-        this.productoRepository = productoRepository; // ← por constructor
+        this.productoRepository = productoRepository;
+        this.clienteRepository = clienteRepository; // ← por constructor
     }
 
     // Elimina el @Autowired suelto
@@ -187,5 +193,87 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public Long contarVentas() {
         return repository.contarVentas();
+    }
+
+    
+    @Override
+    public ResumenDashboardDTO obtenerResumenDashboard(int anio) {
+
+        // Fechas de hoy
+        LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
+        LocalDateTime finDia = inicioDia.plusDays(1);
+
+        // Fechas del mes actual
+        LocalDateTime inicioMes = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime finMes = inicioMes.plusMonths(1);
+
+        // Tarjetas
+        Double totalHoy = repository.totalVentasHoy(inicioDia, finDia);
+        Double totalMes = repository.totalVentasMes(inicioMes, finMes);
+        Long cantidadHoy = (long) repository.ventasDeHoy(inicioDia, finDia).size();
+        Long totalClientes = clienteRepository.count();
+        Long stockBajo = (long) productoRepository.productosStockBajo(5).size();
+
+        // Ventas por mes
+        List<ResumenDashboardDTO.VentaMensualDTO> ventasPorMes = repository
+                .consolidadoMensual(anio)
+                .stream()
+                .map(row -> new ResumenDashboardDTO.VentaMensualDTO(
+                        ((Number) row[0]).intValue(),
+                        ((Number) row[1]).doubleValue()))
+                .toList();
+
+        // Métodos de pago
+        List<ResumenDashboardDTO.MetodoPagoResumenDTO> metodosPago = repository
+                .ventasPorMetodoPagoResumen()
+                .stream()
+                .map(row -> new ResumenDashboardDTO.MetodoPagoResumenDTO(
+                        (String) row[0],
+                        ((Number) row[1]).longValue(),
+                        ((Number) row[2]).doubleValue()))
+                .toList();
+
+        // Últimas 5 ventas
+        List<ResumenDashboardDTO.UltimaVentaDTO> ultimasVentas = repository
+                .ultimasVentas(org.springframework.data.domain.PageRequest.of(0, 5))
+                .stream()
+                .map(v -> new ResumenDashboardDTO.UltimaVentaDTO(
+                        v.getId(),
+                        v.getFecha().toString(),
+                        v.getTotal(),
+                        v.getCliente() != null ? v.getCliente().getNombres() : "Sin cliente",
+                        v.getMetodoPago() != null ? v.getMetodoPago().getNombre() : "Sin método"))
+                .toList();
+
+        // Más vendidos top 5
+        List<ResumenDashboardDTO.ProductoVendidoDTO> masVendidos = productoRepository
+                .masVendidos(org.springframework.data.domain.PageRequest.of(0, 5))
+                .stream()
+                .map(row -> new ResumenDashboardDTO.ProductoVendidoDTO(
+                        (String) row[0],
+                        ((Number) row[1]).longValue(),
+                        ((Number) row[2]).doubleValue()))
+                .toList();
+
+        // Alertas de stock bajo
+        List<ResumenDashboardDTO.ProductoStockDTO> alertasStock = productoRepository
+                .productosStockBajo(5)
+                .stream()
+                .map(p -> new ResumenDashboardDTO.ProductoStockDTO(
+                        p.getId(),
+                        p.getNombre(),
+                        p.getStock(),
+                        p.getCategoria() != null ? p.getCategoria().getNombre() : "Sin categoría"))
+                .toList();
+
+        return new ResumenDashboardDTO(
+                totalHoy, totalMes, cantidadHoy, totalClientes, stockBajo,
+                ventasPorMes, metodosPago, ultimasVentas, masVendidos, alertasStock);
+    }
+
+    @Override
+    public List<Venta> ultimasVentas(int cantidad) {
+        return repository.ultimasVentas(
+                org.springframework.data.domain.PageRequest.of(0, cantidad));
     }
 }

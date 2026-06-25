@@ -1,6 +1,9 @@
 package com.example.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -25,7 +28,6 @@ public class Usuario {
     // Nombre de usuario
     private String username;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     @Column(nullable = false)
     // Contraseña del usuario
     private String password;
@@ -37,7 +39,6 @@ public class Usuario {
     @OneToOne
     @JoinColumn(name = "empleado_id", unique = true, nullable = false)
     // Un usuario pertenece a un empleado
-    @JsonManagedReference // Evita bucle infinito
     private Empleado empleado;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -1,0 +1,172 @@
+$beige: #f5f0e6;
+$crema: #fffaf3;
+$marron: #8b5e3c;
+$marron-oscuro: #5c3a21;
+$gris: #6c757d;
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: $marron-oscuro;
+    }
+
+    .badge {
+        background: $beige;
+        color: $marron;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+}
+
+.filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .input-busqueda,
+    .select-filtro {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        background: white;
+
+        &:focus {
+            border-color: $marron;
+        }
+    }
+
+    .input-busqueda {
+        flex: 1;
+    }
+}
+
+.cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 12px;
+    color: $gris;
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid $beige;
+        border-top-color: $marron;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th {
+        text-align: left;
+        padding: 10px 12px;
+        color: $gris;
+        font-weight: 600;
+        border-bottom: 2px solid $beige;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 12px;
+        color: $marron-oscuro;
+        border-bottom: 1px solid $beige;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover td {
+        background: $crema;
+    }
+}
+
+.id-badge {
+    background: $beige;
+    color: $marron;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.metodo-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.acciones {
+    display: flex;
+    gap: 8px;
+
+    button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+        width: auto;
+    }
+
+    .btn-ver {
+        background: $beige;
+        color: $marron-oscuro;
+
+        &:hover {
+            background: #ede8de;
+        }
+    }
+
+    .btn-eliminar {
+        background: #fdecea;
+        color: #e74c3c;
+
+        &:hover {
+            background: #fad7d4;
+        }
+    }
+}
+
+.sin-datos {
+    text-align: center;
+    padding: 30px;
+    color: $gris;
+}

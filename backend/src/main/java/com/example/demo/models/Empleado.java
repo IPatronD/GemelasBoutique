@@ -1,6 +1,8 @@
 package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -46,6 +48,6 @@ public class Empleado {
 
     @OneToOne(mappedBy = "empleado")
     // Un empleado tiene un usuario
-    @JsonBackReference // Evita bucle infinito
+    @JsonIgnore// Evita bucle infinito
     private Usuario usuario;
 }

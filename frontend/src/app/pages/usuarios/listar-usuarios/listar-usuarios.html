@@ -1,1 +1,132 @@
-<p>listar-usuarios works!</p>
+<div class="page-header">
+    <h1>Usuarios</h1>
+    <span class="badge">{{ usuariosFiltrados.length }} registros</span>
+    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Usuario</button>
+</div>
+
+<div class="filtros">
+    <input type="text" placeholder="Buscar por username o empleado..." [(ngModel)]="busqueda" (input)="filtrar()"
+        class="input-busqueda" />
+</div>
+
+<div class="toggle-estado">
+    <button [class.activo]="!verInactivos" (click)="cambiarVista(false)">Activos</button>
+    <button [class.activo]="verInactivos" (click)="cambiarVista(true)">Inactivos</button>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando usuarios...</p>
+</div>
+
+<div class="card" *ngIf="!cargando">
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Empleado</th>
+                <th>Roles</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let u of usuariosFiltrados">
+                <td><span class="id-badge">#{{ u.id }}</span></td>
+                <td><strong>{{ u.username }}</strong></td>
+                <td>{{ u.empleado?.nombres }} {{ u.empleado?.apellidos }}</td>
+                <td>
+                    <span class="rol-badge" *ngFor="let r of u.roles">{{ r.nombre }}</span>
+                </td>
+                <td>
+                    <span class="estado-badge" [class.activo]="u.estado" [class.inactivo]="!u.estado">
+                        {{ u.estado ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="acciones">
+                        <ng-container *ngIf="u.estado">
+                            <button class="btn-editar" (click)="abrirEditar(u)">✏️ Editar</button>
+                            <button class="btn-eliminar" (click)="desactivar(u)">🚫 Desactivar</button>
+                        </ng-container>
+                        <ng-container *ngIf="!u.estado">
+                            <button class="btn-activar" (click)="activar(u)">✅ Activar</button>
+                        </ng-container>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="sin-datos" *ngIf="usuariosFiltrados.length === 0">
+        No se encontraron usuarios
+    </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
+    <div class="modal-global" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>{{ modoEdicion ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+            <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" [(ngModel)]="form.username" placeholder="nombre.apellido" />
+            </div>
+            <div class="form-group">
+                <label>{{ modoEdicion ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña' }}</label>
+                <input type="password" [(ngModel)]="form.password" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+                <label>Empleado</label>
+                <ng-container *ngIf="modoEdicion">
+                    <input type="text"
+                        [value]="usuarioSeleccionado?.empleado?.nombres + ' ' + usuarioSeleccionado?.empleado?.apellidos" readonly
+                        class="readonly" />
+                </ng-container>
+                <ng-container *ngIf="!modoEdicion">
+                    <select [(ngModel)]="form.empleado" [compareWith]="compararObj">
+                        <option [ngValue]="null">Seleccionar...</option>
+                        <option *ngFor="let e of empleados" [ngValue]="e">
+                            {{ e.nombres }} {{ e.apellidos }}
+                        </option>
+                    </select>
+                </ng-container>
+            </div>
+            <div class="form-group">
+                <label>Roles</label>
+                <div class="roles-grid">
+                    <div class="rol-item" *ngFor="let r of roles" [class.seleccionado]="rolSeleccionado(r)"
+                        (click)="toggleRol(r)">
+                        {{ r.nombre }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="guardar()">
+                {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div class="overlay-global" *ngIf="modalEliminar">
+    <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>¿Eliminar usuario?</h3>
+        </div>
+        <div class="modal-body-g">
+            <p>¿Eliminar a <strong>{{ usuarioAEliminar?.username }}</strong>?</p>
+            <p class="advertencia-g">⚠️ Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cancelarEliminar()">Cancelar</button>
+            <button class="btn-confirmar-g" (click)="eliminar()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>

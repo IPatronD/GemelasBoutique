@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "ventas")
 @Data
@@ -55,5 +57,6 @@ public class Venta {
     private MetodoPago metodoPago;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<DetalleVenta> detalles;
 }

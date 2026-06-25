@@ -61,11 +61,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
     @Override
     public void eliminar(Long id) {
-
         Empleado empleado = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
-        repository.delete(empleado);
+        empleado.setEstado(false);
+        repository.save(empleado);
     }
 
     // CONSULTAS PERSONALIZADAS
@@ -103,4 +103,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public boolean existeCorreo(String correo) {
         return repository.existsByCorreo(correo);
     }
+
+    @Override
+    public List<Empleado> sinUsuario() {
+        return repository.findByUsuarioIsNull();
+    }
+    
 }

@@ -1,0 +1,134 @@
+<div class="perfil-page">
+
+    <div class="cargando" *ngIf="cargando">
+        <div class="spinner"></div>
+        <p>Cargando perfil...</p>
+    </div>
+
+    <ng-container *ngIf="!cargando && perfil">
+
+        <div class="page-header">
+            <h1>Mi Perfil</h1>
+        </div>
+
+        <div class="perfil-grid">
+
+            <!-- TARJETA PRINCIPAL -->
+            <div class="card perfil-card">
+                <div class="avatar">
+                    <span>{{ perfil.empleado?.nombres?.charAt(0) }}{{ perfil.empleado?.apellidos?.charAt(0) }}</span>
+                </div>
+                <div class="perfil-info">
+                    <h2>{{ perfil.empleado?.nombres }} {{ perfil.empleado?.apellidos }}</h2>
+                    <span class="rol-badge">{{ getRolLabel() }}</span>
+                </div>
+            </div>
+
+            <!-- DATOS PERSONALES -->
+            <div class="card">
+                <div class="seccion-header">
+                    <h3 class="seccion-titulo">Datos Personales</h3>
+                    <button class="btn-editar-perfil" (click)="abrirEditar()">✏️ Editar</button>
+                </div>
+                <div class="dato-fila">
+                    <span class="dato-label">Username</span>
+                    <span class="dato-valor">{{ perfil.username }}</span>
+                </div>
+                <div class="dato-fila">
+                    <span class="dato-label">DNI</span>
+                    <span class="dato-valor">{{ perfil.empleado?.dni }}</span>
+                </div>
+                <div class="dato-fila">
+                    <span class="dato-label">Correo</span>
+                    <span class="dato-valor">{{ perfil.empleado?.correo }}</span>
+                </div>
+                <div class="dato-fila">
+                    <span class="dato-label">Rol</span>
+                    <span class="dato-valor">{{ getRolLabel() }}</span>
+                </div>
+            </div>
+
+            <!-- SEGURIDAD -->
+            <div class="card">
+                <h3 class="seccion-titulo">Seguridad</h3>
+                <p class="seguridad-texto">Cambia tu contraseña periódicamente para mantener tu cuenta segura.</p>
+                <button class="btn-password" (click)="abrirCambiarPassword()">🔑 Cambiar Contraseña</button>
+            </div>
+
+        </div>
+
+    </ng-container>
+
+</div>
+
+<!-- MODAL CAMBIAR PASSWORD -->
+<div class="overlay-global" *ngIf="modalPassword" (click)="cerrarPassword()">
+    <div class="modal-global" style="width:420px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>Cambiar Contraseña</h3>
+            <button class="btn-cerrar-g" (click)="cerrarPassword()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="exito-msg" *ngIf="exitoPassword">✅ Contraseña actualizada correctamente.</div>
+            <ng-container *ngIf="!exitoPassword">
+                <div class="form-group">
+                    <label>Nueva Contraseña</label>
+                    <input type="password" [(ngModel)]="formPassword.nueva" placeholder="Mínimo 6 caracteres" />
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña</label>
+                    <input type="password" [(ngModel)]="formPassword.confirmar" placeholder="Repite la contraseña" />
+                </div>
+                <div class="error-msg" *ngIf="errorPassword">{{ errorPassword }}</div>
+            </ng-container>
+        </div>
+        <div class="modal-footer-g" *ngIf="!exitoPassword">
+            <button class="btn-cancelar-g" (click)="cerrarPassword()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="cambiarPassword()">Actualizar</button>
+        </div>
+        <div class="modal-footer-g" *ngIf="exitoPassword">
+            <button class="btn-guardar-g" (click)="cerrarPassword()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PERFIL -->
+<div class="overlay-global" *ngIf="modalEditar" (click)="cerrarEditar()">
+    <div class="modal-global" style="width:420px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>Editar Perfil</h3>
+            <button class="btn-cerrar-g" (click)="cerrarEditar()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="exito-msg" *ngIf="exitoEditar">✅ Perfil actualizado correctamente.</div>
+            <ng-container *ngIf="!exitoEditar">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" [(ngModel)]="formEditar.username" placeholder="Username" />
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombres</label>
+                        <input type="text" [(ngModel)]="formEditar.nombres" placeholder="Nombres" />
+                    </div>
+                    <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" [(ngModel)]="formEditar.apellidos" placeholder="Apellidos" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" [(ngModel)]="formEditar.correo" placeholder="correo@ejemplo.com" />
+                </div>
+                <div class="error-msg" *ngIf="errorEditar">{{ errorEditar }}</div>
+            </ng-container>
+        </div>
+        <div class="modal-footer-g" *ngIf="!exitoEditar">
+            <button class="btn-cancelar-g" (click)="cerrarEditar()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="guardarPerfil()">Guardar</button>
+        </div>
+        <div class="modal-footer-g" *ngIf="exitoEditar">
+            <button class="btn-guardar-g" (click)="cerrarEditar()">Cerrar</button>
+        </div>
+    </div>
+</div>

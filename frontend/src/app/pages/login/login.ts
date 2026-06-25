@@ -12,21 +12,29 @@ import { Router } from '@angular/router';
 export class Login {
   username = '';
   password = '';
+  error = '';
 
-  constructor(
-    private auth: Auth,
-    private router: Router,
-  ) {}
+  constructor(private auth: Auth, private router: Router) {}
 
   login() {
     this.auth.login(this.username, this.password).subscribe({
       next: (res) => {
         this.auth.guardarToken(res.token);
-        console.log('Login correcto');
-        this.router.navigate(['/dashboard']);
+        this.auth.guardarRol(res.rol);
+
+        // Redirigir según rol
+        if (res.rol === 'ROLE_ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else if (res.rol === 'ROLE_SUPERVISORA') {
+          this.router.navigate(['/supervisora/dashboard']);
+        } else if (res.rol === 'ROLE_VENDEDORA') {
+          this.router.navigate(['/vendedora/dashboard']);
+        } else {
+          this.error = 'Rol no reconocido';
+        }
       },
-      error: (err) => {
-        console.error('Error login', err);
+      error: () => {
+        this.error = 'Usuario o contraseña incorrectos';
       },
     });
   }

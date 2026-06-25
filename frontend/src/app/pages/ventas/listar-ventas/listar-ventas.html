@@ -1,1 +1,118 @@
-<p>listar-ventas works!</p>
+<div class="page-header">
+  <h1>Ventas</h1>
+  <span class="badge">{{ ventasFiltradas.length }} registros</span>
+</div>
+
+<div class="filtros">
+  <input type="text" placeholder="Buscar por cliente..."
+    [(ngModel)]="busqueda" (input)="filtrar()" class="input-busqueda" />
+  <select [(ngModel)]="filtroMetodo" (change)="filtrar()" class="select-filtro">
+    <option value="">Todos los métodos</option>
+    <option *ngFor="let m of getMetodos()" [value]="m">{{ m }}</option>
+  </select>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+  <div class="spinner"></div>
+  <p>Cargando ventas...</p>
+</div>
+
+<div class="card" *ngIf="!cargando">
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Método de Pago</th>
+        <th>Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of ventasFiltradas">
+        <td><span class="id-badge">#{{ v.id }}</span></td>
+        <td>{{ formatFecha(v.fecha) }}</td>
+        <td>{{ v.cliente?.nombres || 'Sin cliente' }}</td>
+        <td><span class="metodo-badge">{{ v.metodoPago?.nombre || '-' }}</span></td>
+        <td><strong>S/ {{ v.total | number:'1.2-2' }}</strong></td>
+        <td>
+          <div class="acciones">
+            <button class="btn-ver" (click)="verDetalle(v)">👁 Ver</button>
+            <button class="btn-eliminar" (click)="confirmarEliminar(v)">🗑 Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="sin-datos" *ngIf="ventasFiltradas.length === 0">
+    No se encontraron ventas
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="overlay-global" *ngIf="modalAbierto" (click)="cerrarModal()">
+  <div class="modal-global" (click)="$event.stopPropagation()">
+    <div class="modal-header-g">
+      <h3>Detalle de Venta #{{ ventaDetalle?.id }}</h3>
+      <button class="btn-cerrar-g" (click)="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body-g" *ngIf="ventaDetalle">
+      <div class="detalle-fila-g">
+        <span class="label-g">Fecha:</span>
+        <span>{{ formatFecha(ventaDetalle.fecha) }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">Cliente:</span>
+        <span>{{ ventaDetalle.cliente?.nombres }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">Método de Pago:</span>
+        <span>{{ ventaDetalle.metodoPago?.nombre }}</span>
+      </div>
+      <hr>
+      <div class="detalle-fila-g">
+        <span class="label-g">Subtotal Bruto:</span>
+        <span>S/ {{ ventaDetalle.subtotalBruto | number:'1.2-2' }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">Descuento Items:</span>
+        <span>- S/ {{ ventaDetalle.totalDescItems | number:'1.2-2' }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">Descuento Global:</span>
+        <span>- S/ {{ ventaDetalle.descuento | number:'1.2-2' }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">Base Imponible:</span>
+        <span>S/ {{ ventaDetalle.baseImponible | number:'1.2-2' }}</span>
+      </div>
+      <div class="detalle-fila-g">
+        <span class="label-g">IVA ({{ ventaDetalle.tasaIva }}%):</span>
+        <span>S/ {{ ventaDetalle.iva | number:'1.2-2' }}</span>
+      </div>
+      <hr>
+      <div class="detalle-fila-g total-g">
+        <span class="label-g">TOTAL:</span>
+        <span>S/ {{ ventaDetalle.total | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div class="overlay-global" *ngIf="modalEliminar">
+  <div class="modal-global modal-small" (click)="$event.stopPropagation()">
+    <div class="modal-header-g">
+      <h3>¿Eliminar venta?</h3>
+    </div>
+    <div class="modal-body-g">
+      <p>¿Eliminar la venta <strong>#{{ ventaAEliminar?.id }}</strong> de <strong>{{ ventaAEliminar?.cliente?.nombres }}</strong>?</p>
+      <p class="advertencia-g">⚠️ Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer-g">
+      <button class="btn-cancelar-g" (click)="cancelarEliminar()">Cancelar</button>
+      <button class="btn-confirmar-g" (click)="eliminar()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>

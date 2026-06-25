@@ -28,4 +28,6 @@ public interface EmpleadoService {
     boolean existeDni(String dni);
 
     boolean existeCorreo(String correo);
+
+    List<Empleado> sinUsuario();
 }

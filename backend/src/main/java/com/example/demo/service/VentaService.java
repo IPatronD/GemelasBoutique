@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.ResumenDashboardDTO;
 import com.example.demo.models.Venta;
 
 import java.time.LocalDateTime;
@@ -30,4 +31,8 @@ public interface VentaService {
     Double totalVentasCliente(Long clienteId);
 
     Long contarVentas();
+
+    ResumenDashboardDTO obtenerResumenDashboard(int anio);
+
+    List<Venta> ultimasVentas(int cantidad);
 }

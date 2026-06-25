@@ -1,0 +1,85 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" [class.cerrado]="!menuAbierto">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <span class="logo-icon">👗</span>
+      <span class="logo-texto" *ngIf="menuAbierto">Gemelas Boutique</span>
+    </div>
+
+    <!-- Menú -->
+    <nav class="sidebar-nav">
+
+      <div class="nav-seccion" *ngIf="menuAbierto">PRINCIPAL</div>
+      <a class="nav-item" (click)="navegarA('/admin/dashboard')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Dashboard</span>
+      </a>
+
+      <div class="nav-seccion" *ngIf="menuAbierto">GESTIÓN</div>
+      <a class="nav-item" (click)="navegarA('/admin/ventas')">
+        <span class="nav-icon">🛒</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Ventas</span>
+      </a>
+      <a class="nav-item" (click)="navegarA('/admin/clientes')">
+        <span class="nav-icon">👥</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Clientes</span>
+      </a>
+      <a class="nav-item" (click)="navegarA('/admin/productos')">
+        <span class="nav-icon">📦</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Productos</span>
+      </a>
+      <div class="nav-seccion" *ngIf="menuAbierto">ADMINISTRACIÓN</div>
+      <a class="nav-item" (click)="navegarA('/admin/empleados')">
+        <span class="nav-icon">👩‍💼</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Empleados</span>
+      </a>
+      <a class="nav-item" (click)="navegarA('/admin/usuarios')">
+        <span class="nav-icon">🔐</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Usuarios</span>
+      </a>
+      <a class="nav-item" (click)="navegarA('/admin/categorias')">
+        <span class="nav-icon">🏷️</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Categorías</span>
+      </a>
+      <a class="nav-item" (click)="navegarA('/admin/metodos-pago')">
+        <span class="nav-icon">💳</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Métodos de Pago</span>
+      </a>
+
+      <div class="nav-seccion" *ngIf="menuAbierto">CUENTA</div>
+      <a class="nav-item" (click)="navegarA('/admin/perfil')">
+        <span class="nav-icon">👤</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Mi Perfil</span>
+      </a>
+      <a class="nav-item logout" (click)="logout()">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-texto" *ngIf="menuAbierto">Cerrar Sesión</span>
+      </a>
+
+    </nav>
+
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="contenido">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="btn-toggle" (click)="toggleMenu()">☰</button>
+      <span class="topbar-titulo">Panel Administrador</span>
+      <div class="topbar-usuario">
+        <span>👗 Gemelas Boutique</span>
+      </div>
+    </header>
+
+    <!-- PÁGINA ACTIVA -->
+    <main class="main-content">
+      <router-outlet />
+    </main>
+
+  </div>
+
+</div>

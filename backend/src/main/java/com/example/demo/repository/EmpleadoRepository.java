@@ -28,4 +28,6 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
 
     // Verificar correo repetido
     boolean existsByCorreo(String correo);
+
+    List<Empleado> findByUsuarioIsNull();
 }

@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -18,6 +20,7 @@ public class DetalleVenta {
 
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
+    @JsonIgnore
     // Muchos detalles pertenecen a una venta
     private Venta venta;
 

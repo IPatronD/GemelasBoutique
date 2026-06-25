@@ -1,0 +1,119 @@
+<div class="page-header">
+    <h1>Empleados</h1>
+    <span class="badge">{{ empleadosFiltrados.length }} registros</span>
+    <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Empleado</button>
+</div>
+
+<div class="filtros">
+    <input type="text" placeholder="Buscar por nombre, DNI o correo..." [(ngModel)]="busqueda" (input)="filtrar()"
+        class="input-busqueda" />
+</div>
+
+<div class="toggle-estado">
+    <button [class.activo]="!verInactivos" (click)="cambiarVista(false)">Activos</button>
+    <button [class.activo]="verInactivos" (click)="cambiarVista(true)">Inactivos</button>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando empleados...</p>
+</div>
+
+<div class="card" *ngIf="!cargando">
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>DNI</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let e of empleadosFiltrados">
+                <td><span class="id-badge">#{{ e.id }}</span></td>
+                <td><strong>{{ e.nombres }}</strong></td>
+                <td>{{ e.apellidos }}</td>
+                <td>{{ e.dni }}</td>
+                <td>{{ e.correo }}</td>
+                <td>
+                    <span class="estado-badge" [class.activo]="e.estado" [class.inactivo]="!e.estado">
+                        {{ e.estado ? 'Activo' : 'Inactivo' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="acciones">
+                        <ng-container *ngIf="e.estado">
+                            <button class="btn-editar" (click)="abrirEditar(e)">✏️ Editar</button>
+                            <button class="btn-eliminar" (click)="confirmarDesactivar(e)">🚫 Desactivar</button>
+                        </ng-container>
+                        <ng-container *ngIf="!e.estado">
+                            <button class="btn-activar" (click)="activar(e)">✅ Activar</button>
+                        </ng-container>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="sin-datos" *ngIf="empleadosFiltrados.length === 0">
+        No se encontraron empleados
+    </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
+    <div class="modal-global" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>{{ modoEdicion ? 'Editar Empleado' : 'Nuevo Empleado' }}</h3>
+            <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
+        </div>
+        <div class="modal-body-g">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <input type="text" [(ngModel)]="form.nombres" placeholder="Nombres" />
+                </div>
+                <div class="form-group">
+                    <label>Apellidos</label>
+                    <input type="text" [(ngModel)]="form.apellidos" placeholder="Apellidos" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>DNI</label>
+                <input type="text" [(ngModel)]="form.dni" placeholder="8 dígitos" maxlength="8"
+                    (keypress)="soloNumeros($event)" [readonly]="modoEdicion" [class.readonly]="modoEdicion" />
+            </div>
+            <div class="form-group">
+                <label>Correo</label>
+                <input type="email" [(ngModel)]="form.correo" placeholder="correo@ejemplo.com" />
+            </div>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
+            <button class="btn-guardar-g" (click)="guardar()">
+                {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DESACTIVAR -->
+<div class="overlay-global" *ngIf="modalDesactivar">
+    <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
+        <div class="modal-header-g">
+            <h3>¿Desactivar empleado?</h3>
+        </div>
+        <div class="modal-body-g">
+            <p>¿Desactivar a <strong>{{ empleadoADesactivar?.nombres }} {{ empleadoADesactivar?.apellidos }}</strong>?
+            </p>
+            <p class="advertencia-g">El empleado quedará inactivo y no podrá acceder al sistema.</p>
+        </div>
+        <div class="modal-footer-g">
+            <button class="btn-cancelar-g" (click)="cancelarDesactivar()">Cancelar</button>
+            <button class="btn-confirmar-g" (click)="desactivar()">Sí, desactivar</button>
+        </div>
+    </div>
+</div>

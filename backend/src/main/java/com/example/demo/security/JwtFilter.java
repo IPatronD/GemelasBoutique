@@ -7,19 +7,21 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -46,10 +48,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 String username = jwtUtil.extraerUsuario(token);
 
+                // Cargar usuario con sus roles desde la BD
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        username,
+                        userDetails,
                         null,
-                        Collections.emptyList());
+                        userDetails.getAuthorities()); // ← ahora sí trae los roles
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }

@@ -33,4 +33,23 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     // Productos con stock mayor a cierto valor
     List<Producto> findByStockGreaterThan(int stock);
+
+    // Productos con stock bajo
+    @Query("""
+                SELECT p
+                FROM Producto p
+                WHERE p.stock <= :limite
+                ORDER BY p.stock ASC
+            """)
+    List<Producto> productosStockBajo(int limite);
+
+    // Top productos más vendidos
+    @Query("""
+                SELECT p.nombre, SUM(d.cantidad), SUM(d.subtotal)
+                FROM DetalleVenta d
+                JOIN d.producto p
+                GROUP BY p.id, p.nombre
+                ORDER BY SUM(d.cantidad) DESC
+            """)
+    List<Object[]> masVendidos(org.springframework.data.domain.Pageable pageable);
 }

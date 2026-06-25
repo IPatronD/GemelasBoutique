@@ -68,7 +68,8 @@ public class ClienteServiceImpl implements ClienteService {
         Cliente cliente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
-        repository.delete(cliente);
+        cliente.setEstado(false);
+        repository.save(cliente);
     }
 
     // CONSULTAS PERSONALIZADAS
