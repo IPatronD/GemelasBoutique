@@ -29,7 +29,7 @@
                         <span class="producto-stock" [class.bajo]="p.stock <= 5">Stock: {{ p.stock }}</span>
                     </div>
                 </div>
-                <button class="btn-agregar" (click)="agregarAlCarrito(p)">+</button>
+                <button class="btn-agregar" (click)="agregarAlCarrito(p)">+ Agregar</button>
             </div>
 
             <div class="sin-datos" *ngIf="productosFiltrados.length === 0">
@@ -104,8 +104,9 @@
             <!-- DESCUENTO GLOBAL -->
             <div class="seccion-descuento" *ngIf="carrito.length > 0">
                 <label class="label-seccion">Descuento global (%)</label>
-                <input type="number" min="0" max="100" [(ngModel)]="descuentoGlobalPorcentaje"
-                    class="input-descuento" />
+                <input type="number" min="0" max="100" step="1" [(ngModel)]="descuentoGlobalPorcentaje"
+                    (input)="validarDescuento()" (keydown)="bloquearTeclaSiExcede($event)"
+                    (paste)="bloquearPegado($event)" class="input-descuento" />
             </div>
 
             <!-- TOTALES -->
@@ -156,16 +157,21 @@
             </select>
 
             <label class="label-form">Nombres</label>
-            <input type="text" [(ngModel)]="formNuevoCliente.nombres" class="input-form" />
+            <input type="text" [(ngModel)]="formNuevoCliente.nombres" class="input-form"
+                placeholder="Nombre completo" />
 
-            <label class="label-form">Documento</label>
-            <input type="text" [(ngModel)]="formNuevoCliente.documento" class="input-form" />
+            <label class="label-form">Documento (máx. 8 dígitos)</label>
+            <input type="text" [(ngModel)]="formNuevoCliente.documento" class="input-form" placeholder="12345678"
+                maxlength="8" (keypress)="soloNumerosModal($event)" />
 
-            <label class="label-form">Teléfono</label>
-            <input type="text" [(ngModel)]="formNuevoCliente.telefono" class="input-form" />
+            <label class="label-form">Teléfono (9 dígitos)</label>
+            <input type="text" [(ngModel)]="formNuevoCliente.telefono" class="input-form" placeholder="987654321"
+                maxlength="9" (keypress)="soloNumerosModal($event)" />
 
             <label class="label-form">Correo</label>
-            <input type="email" [(ngModel)]="formNuevoCliente.correo" class="input-form" />
+            <input type="email" [(ngModel)]="formNuevoCliente.correo" class="input-form"
+                placeholder="correo@ejemplo.com" (blur)="validarCorreoModal()" />
+            <span class="campo-error" *ngIf="errorCorreo">{{ errorCorreo }}</span>
         </div>
         <div class="modal-footer-g">
             <button class="btn-cancelar-g" (click)="cerrarNuevoCliente()">Cancelar</button>

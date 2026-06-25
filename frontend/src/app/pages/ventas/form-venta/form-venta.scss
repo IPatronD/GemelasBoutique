@@ -30,7 +30,7 @@ $rojo: #e74c3c;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    height: 300px;
     gap: 12px;
     color: $gris;
 
@@ -52,9 +52,10 @@ $rojo: #e74c3c;
 
 .venta-layout {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 16px;
+    grid-template-columns: 1fr 420px;
+    gap: 20px;
     align-items: start;
+    height: calc(100vh - 140px);
 }
 
 .card {
@@ -76,17 +77,32 @@ $rojo: #e74c3c;
     }
 }
 
-// PRODUCTOS
+// COLUMNA PRODUCTOS
 .col-productos {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    height: 100%;
+    overflow: hidden;
 }
 
 .grid-productos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 12px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: $beige transparent;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: $beige;
+        border-radius: 4px;
+    }
 }
 
 .tarjeta-producto {
@@ -95,24 +111,24 @@ $rojo: #e74c3c;
     padding: 14px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     gap: 10px;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
 
     .producto-info {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        overflow: hidden;
     }
 
     .producto-nombre {
         font-weight: 600;
         color: $marron-oscuro;
         font-size: 14px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .producto-categoria {
@@ -124,13 +140,12 @@ $rojo: #e74c3c;
         display: flex;
         gap: 8px;
         align-items: center;
-        margin-top: 2px;
     }
 
     .producto-precio {
         font-weight: 700;
         color: $marron;
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .producto-stock {
@@ -142,16 +157,16 @@ $rojo: #e74c3c;
     }
 
     .btn-agregar {
+        width: 100%;
         background: $marron;
         color: white;
         border: none;
         border-radius: 8px;
-        width: 36px;
-        height: 36px;
-        font-size: 20px;
-        font-weight: 700;
+        padding: 8px;
+        font-size: 13px;
+        font-weight: 600;
         cursor: pointer;
-        flex-shrink: 0;
+        transition: 0.2s;
         &:hover {
             background: $marron-oscuro;
         }
@@ -165,35 +180,67 @@ $rojo: #e74c3c;
     color: $gris;
 }
 
-// CARRITO
+// COLUMNA CARRITO
 .col-carrito {
     position: sticky;
     top: 0;
+    height: calc(100vh - 140px);
+    display: flex;
 }
 
-.carrito-card h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: $marron-oscuro;
-    margin-bottom: 12px;
+.carrito-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: $beige transparent;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: $beige;
+        border-radius: 4px;
+    }
+
+    h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: $marron-oscuro;
+        margin-bottom: 12px;
+        flex-shrink: 0;
+    }
 }
 
 .carrito-vacio {
     text-align: center;
     color: $gris;
     font-size: 13px;
-    padding: 20px 0;
+    padding: 30px 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .carrito-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    max-height: 220px;
+    gap: 6px;
     overflow-y: auto;
-    scrollbar-width: none;
+    max-height: 220px;
+    flex-shrink: 0;
+    scrollbar-width: thin;
+    scrollbar-color: $beige transparent;
+
     &::-webkit-scrollbar {
-        display: none;
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: $beige;
+        border-radius: 4px;
     }
 }
 
@@ -230,14 +277,18 @@ $rojo: #e74c3c;
     }
 
     .btn-cant {
-        width: 22px;
-        height: 22px;
+        width: 24px;
+        height: 24px;
         border: none;
         border-radius: 6px;
         background: $beige;
         color: $marron-oscuro;
         font-weight: 700;
         cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         &:hover {
             background: #ede8de;
         }
@@ -246,10 +297,9 @@ $rojo: #e74c3c;
     .item-cantidad {
         font-size: 13px;
         font-weight: 600;
-        min-width: 16px;
+        min-width: 18px;
         text-align: center;
     }
-
     .item-subtotal {
         font-size: 13px;
         font-weight: 700;
@@ -262,31 +312,37 @@ $rojo: #e74c3c;
         border: none;
         color: $rojo;
         cursor: pointer;
-        font-size: 13px;
+        font-size: 14px;
         width: auto;
-        padding: 2px;
+        padding: 2px 4px;
+        &:hover {
+            opacity: 0.7;
+        }
     }
 }
 
 hr {
     border: none;
     border-top: 1px solid $beige;
-    margin: 14px 0;
+    margin: 12px 0;
+    flex-shrink: 0;
 }
 
 .label-seccion {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: $gris;
     margin-bottom: 6px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .seccion-cliente,
 .seccion-metodo,
 .seccion-descuento {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
 }
 
 .cliente-seleccionado {
@@ -298,6 +354,7 @@ hr {
     border-radius: 8px;
     font-size: 13px;
     color: $marron-oscuro;
+    font-weight: 600;
 
     .btn-quitar-cliente {
         background: none;
@@ -321,7 +378,7 @@ hr {
     background: white;
     border: 1px solid #ddd;
     border-radius: 8px;
-    max-height: 160px;
+    max-height: 150px;
     overflow-y: auto;
     z-index: 10;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -350,7 +407,7 @@ hr {
     background: none;
     border: 1px dashed $marron;
     color: $marron;
-    padding: 8px;
+    padding: 7px;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
@@ -378,6 +435,7 @@ hr {
     background: $crema;
     border-radius: 8px;
     padding: 12px;
+    flex-shrink: 0;
 }
 
 .fila-total {
@@ -390,7 +448,7 @@ hr {
     &.total-final {
         font-size: 16px;
         font-weight: 700;
-        border-top: 1px solid #e0d5c5;
+        border-top: 2px solid #e0d5c5;
         margin-top: 6px;
         padding-top: 8px;
     }
@@ -398,7 +456,7 @@ hr {
 
 .btn-confirmar-venta {
     width: 100%;
-    margin-top: 14px;
+    margin-top: 12px;
     padding: 12px;
     background: $marron;
     color: white;
@@ -408,6 +466,7 @@ hr {
     font-weight: 700;
     cursor: pointer;
     transition: 0.2s;
+    flex-shrink: 0;
 
     &:hover:not(:disabled) {
         background: $marron-oscuro;
@@ -418,7 +477,6 @@ hr {
     }
 }
 
-// Modal forms
 .label-form {
     display: block;
     font-size: 12px;
@@ -457,4 +515,12 @@ hr {
     color: $marron-oscuro;
     text-align: center;
     margin-top: 10px;
+}
+
+.campo-error {
+    display: block;
+    color: $rojo;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 600;
 }

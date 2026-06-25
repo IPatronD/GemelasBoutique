@@ -214,6 +214,56 @@ export class FormVenta implements OnInit {
     return Math.round((this.getBaseImponible() + this.getIva()) * 100) / 100;
   }
 
+  // ── DESCUENTO GLOBAL: validación estricta 0-100, solo números ──
+
+  bloquearTeclaSiExcede(event: KeyboardEvent) {
+    // Teclas de control siempre permitidas
+    const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+    if (teclasPermitidas.includes(event.key) || event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Bloquea cualquier cosa que no sea un dígito del 0 al 9
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      return;
+    }
+
+    // Si es dígito, valida que no exceda 100
+    const input = event.target as HTMLInputElement;
+    const valorActual = input.value;
+    const cursorPos = input.selectionStart ?? valorActual.length;
+    const valorSimulado = valorActual.slice(0, cursorPos) + event.key + valorActual.slice(cursorPos);
+    const numeroSimulado = parseInt(valorSimulado, 10);
+
+    if (numeroSimulado > 100) {
+      event.preventDefault();
+    }
+  }
+
+  bloquearPegado(event: ClipboardEvent) {
+    event.preventDefault();
+    const texto = event.clipboardData?.getData('text') ?? '';
+    const soloNumeros = texto.replace(/[^0-9]/g, '');
+    const numero = parseInt(soloNumeros, 10);
+
+    if (!isNaN(numero)) {
+      this.descuentoGlobalPorcentaje = Math.min(numero, 100);
+    }
+    this.cdr.detectChanges();
+  }
+
+  validarDescuento() {
+    if (this.descuentoGlobalPorcentaje === null || this.descuentoGlobalPorcentaje === undefined) {
+      this.descuentoGlobalPorcentaje = 0;
+    } else if (this.descuentoGlobalPorcentaje < 0) {
+      this.descuentoGlobalPorcentaje = 0;
+    } else if (this.descuentoGlobalPorcentaje > 100) {
+      this.descuentoGlobalPorcentaje = 100;
+    }
+    this.cdr.detectChanges();
+  }
+
   // ── CLIENTE ──
 
   buscarClientes() {
@@ -262,6 +312,19 @@ export class FormVenta implements OnInit {
 
     if (!f.nombres || !f.documento || !f.telefono || !f.correo) {
       this.errorNuevoCliente = 'Completa todos los campos.';
+      return;
+    }
+    if (f.documento.length !== 8) {
+      this.errorNuevoCliente = 'El documento debe tener exactamente 8 dígitos.';
+      return;
+    }
+    if (f.telefono.length !== 9) {
+      this.errorNuevoCliente = 'El teléfono debe tener exactamente 9 dígitos.';
+      return;
+    }
+    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regexCorreo.test(f.correo)) {
+      this.errorNuevoCliente = 'Correo inválido (ej: nombre@dominio.com)';
       return;
     }
 
@@ -350,5 +413,17 @@ export class FormVenta implements OnInit {
     this.modalExito = false;
     this.document.body.classList.remove('modal-open');
     this.router.navigate(['/vendedora/caja']);
+  }
+
+  errorCorreo = '';
+
+  soloNumerosModal(event: KeyboardEvent): boolean {
+    return /[0-9]/.test(event.key);
+  }
+
+  validarCorreoModal() {
+    const correo = this.formNuevoCliente.correo;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    this.errorCorreo = correo && !regex.test(correo) ? 'Correo inválido (ej: nombre@dominio.com)' : '';
   }
 }
