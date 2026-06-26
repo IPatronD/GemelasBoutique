@@ -1,19 +1,23 @@
+<!-- Encabezado con contador y botón de nueva categoría -->
 <div class="page-header">
     <h1>Categorías</h1>
     <span class="badge">{{ categoriasFiltradas.length }} registros</span>
     <button class="btn-nuevo" (click)="abrirNuevo()">+ Nueva Categoría</button>
 </div>
 
+<!-- Buscador: filtra en tiempo real con cada tecla -->
 <div class="filtros">
     <input type="text" placeholder="Buscar por nombre o descripción..." [(ngModel)]="busqueda" (input)="filtrar()"
         class="input-busqueda" />
 </div>
 
+<!-- Spinner de carga -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando categorías...</p>
 </div>
 
+<!-- Tabla, visible solo cuando termina de cargar -->
 <div class="card" *ngIf="!cargando">
     <table class="tabla">
         <thead>
@@ -25,6 +29,7 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Itera la lista filtrada -->
             <tr *ngFor="let c of categoriasFiltradas">
                 <td><span class="id-badge">#{{ c.id }}</span></td>
                 <td><strong>{{ c.nombre }}</strong></td>
@@ -43,9 +48,10 @@
     </div>
 </div>
 
-<!-- MODAL FORM -->
+<!-- MODAL CREAR/EDITAR: se cierra al hacer clic fuera -->
 <div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
     <div class="modal-global" (click)="$event.stopPropagation()">
+        <!-- stopPropagation evita que se cierre al hacer clic dentro -->
         <div class="modal-header-g">
             <h3>{{ modoEdicion ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
             <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
@@ -69,7 +75,7 @@
     </div>
 </div>
 
-<!-- MODAL ELIMINAR -->
+<!-- MODAL CONFIRMAR ELIMINAR -->
 <div class="overlay-global" *ngIf="modalEliminar">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -77,6 +83,7 @@
         </div>
         <div class="modal-body-g">
             <p>¿Eliminar <strong>{{ categoriaAEliminar?.nombre }}</strong>?</p>
+            <!-- Aviso: el backend lanzará error si tiene productos asociados -->
             <p class="advertencia-g">⚠️ Si tiene productos asociados, no se podrá eliminar.</p>
         </div>
         <div class="modal-footer-g">

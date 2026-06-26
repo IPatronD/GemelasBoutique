@@ -1,13 +1,16 @@
+<!-- Encabezado con contador de registros -->
 <div class="page-header">
   <h1>Ventas</h1>
   <span class="badge">{{ ventasFiltradas.length }} registros</span>
 </div>
 
+<!-- Filtros: búsqueda por cliente + selector de método de pago -->
 <div class="filtros">
   <input type="text" placeholder="Buscar por cliente..." [(ngModel)]="busqueda" (input)="filtrar()"
     class="input-busqueda" />
   <select [(ngModel)]="filtroMetodo" (change)="filtrar()" class="select-filtro">
     <option value="">Todos los métodos</option>
+    <!-- Genera opciones dinámicamente con los métodos únicos de las ventas -->
     <option *ngFor="let m of getMetodos()" [value]="m">{{ m }}</option>
   </select>
 </div>
@@ -38,7 +41,9 @@
         <td><strong>S/ {{ v.total | number:'1.2-2' }}</strong></td>
         <td>
           <div class="acciones">
+            <!-- Ver detalle: disponible para todos los roles -->
             <button class="btn-ver" (click)="verDetalle(v)">👁 Ver</button>
+            <!-- Eliminar: solo visible para el admin -->
             <button class="btn-eliminar" (click)="confirmarEliminar(v)" *ngIf="esAdmin">
               🗑 Eliminar
             </button>
@@ -52,7 +57,7 @@
   </div>
 </div>
 
-<!-- MODAL DETALLE -->
+<!-- MODAL DETALLE: muestra el desglose financiero de la venta -->
 <div class="overlay-global" *ngIf="modalAbierto" (click)="cerrarModal()">
   <div class="modal-global" (click)="$event.stopPropagation()">
     <div class="modal-header-g">
@@ -73,6 +78,7 @@
         <span>{{ ventaDetalle.metodoPago?.nombre }}</span>
       </div>
       <hr>
+      <!-- Desglose de importes -->
       <div class="detalle-fila-g">
         <span class="label-g">Subtotal Bruto:</span>
         <span>S/ {{ ventaDetalle.subtotalBruto | number:'1.2-2' }}</span>
@@ -102,7 +108,7 @@
   </div>
 </div>
 
-<!-- MODAL ELIMINAR - solo admin -->
+<!-- MODAL ELIMINAR: solo se renderiza si el usuario es admin -->
 <div class="overlay-global" *ngIf="modalEliminar && esAdmin">
   <div class="modal-global modal-small" (click)="$event.stopPropagation()">
     <div class="modal-header-g">

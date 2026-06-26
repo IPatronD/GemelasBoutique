@@ -2,8 +2,10 @@
     <h1>Registrar Venta</h1>
 </div>
 
+<!-- Banner de error global -->
 <div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
 
+<!-- Spinner mientras cargan productos, clientes y métodos de pago -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando productos...</p>
@@ -11,14 +13,16 @@
 
 <div class="venta-layout" *ngIf="!cargando">
 
-    <!-- COLUMNA IZQUIERDA: PRODUCTOS -->
+    <!-- COLUMNA IZQUIERDA: catálogo de productos -->
     <div class="col-productos">
 
         <div class="card">
+            <!-- Búsqueda por nombre o categoría -->
             <input type="text" placeholder="🔍 Buscar producto por nombre o categoría..." [(ngModel)]="busquedaProducto"
                 (input)="filtrarProductos()" class="input-busqueda" />
         </div>
 
+        <!-- Grid de tarjetas de productos disponibles -->
         <div class="grid-productos">
             <div class="tarjeta-producto" *ngFor="let p of productosFiltrados">
                 <div class="producto-info">
@@ -26,6 +30,7 @@
                     <span class="producto-categoria">{{ p.categoria?.nombre || 'Sin categoría' }}</span>
                     <div class="producto-meta">
                         <span class="producto-precio">S/ {{ p.precio | number:'1.2-2' }}</span>
+                        <!-- Stock en amarillo si es bajo -->
                         <span class="producto-stock" [class.bajo]="p.stock <= 5">Stock: {{ p.stock }}</span>
                     </div>
                 </div>
@@ -39,7 +44,7 @@
 
     </div>
 
-    <!-- COLUMNA DERECHA: CARRITO -->
+    <!-- COLUMNA DERECHA: carrito y resumen de la venta -->
     <div class="col-carrito">
 
         <div class="card carrito-card">
@@ -50,12 +55,14 @@
                 Agrega productos para iniciar la venta
             </div>
 
+            <!-- Lista de items en el carrito -->
             <div class="carrito-items" *ngIf="carrito.length > 0">
-                <div class="item-carrito" *ngFor="let item of carrito">
+                <div class="item-carrito" *ngFor="let item de carrito">
                     <div class="item-info">
                         <span class="item-nombre">{{ item.nombre }}</span>
                         <span class="item-precio">S/ {{ item.precio | number:'1.2-2' }} c/u</span>
                     </div>
+                    <!-- Controles de cantidad -->
                     <div class="item-controles">
                         <button class="btn-cant" (click)="decrementar(item)">−</button>
                         <span class="item-cantidad">{{ item.cantidad }}</span>
@@ -68,18 +75,21 @@
 
             <hr *ngIf="carrito.length > 0">
 
-            <!-- CLIENTE -->
+            <!-- SECCIÓN CLIENTE -->
             <div class="seccion-cliente" *ngIf="carrito.length > 0">
                 <label class="label-seccion">Cliente</label>
 
+                <!-- Cliente ya seleccionado -->
                 <div class="cliente-seleccionado" *ngIf="clienteSeleccionado">
                     <span>👤 {{ clienteSeleccionado.nombres }} — {{ clienteSeleccionado.documento }}</span>
                     <button class="btn-quitar-cliente" (click)="quitarCliente()">✕</button>
                 </div>
 
+                <!-- Buscador de cliente -->
                 <div class="buscador-cliente" *ngIf="!clienteSeleccionado">
                     <input type="text" placeholder="Buscar cliente por nombre o documento..."
                         [(ngModel)]="busquedaCliente" (input)="buscarClientes()" class="input-busqueda" />
+                    <!-- Dropdown de resultados -->
                     <div class="lista-clientes" *ngIf="mostrarListaClientes">
                         <div class="opcion-cliente" *ngFor="let c of clientesFiltrados" (click)="seleccionarCliente(c)">
                             {{ c.nombres }} — {{ c.documento }}
@@ -88,11 +98,12 @@
                             Sin resultados
                         </div>
                     </div>
+                    <!-- Botón para crear cliente rápido -->
                     <button class="btn-nuevo-cliente" (click)="abrirNuevoCliente()">+ Nuevo cliente</button>
                 </div>
             </div>
 
-            <!-- MÉTODO DE PAGO -->
+            <!-- SECCIÓN MÉTODO DE PAGO -->
             <div class="seccion-metodo" *ngIf="carrito.length > 0">
                 <label class="label-seccion">Método de Pago</label>
                 <select [(ngModel)]="metodoPagoId" class="select-metodo">
@@ -101,7 +112,7 @@
                 </select>
             </div>
 
-            <!-- DESCUENTO GLOBAL -->
+            <!-- SECCIÓN DESCUENTO GLOBAL -->
             <div class="seccion-descuento" *ngIf="carrito.length > 0">
                 <label class="label-seccion">Descuento global (%)</label>
                 <input type="number" min="0" max="100" step="1" [(ngModel)]="descuentoGlobalPorcentaje"
@@ -115,6 +126,7 @@
                     <span>Subtotal</span>
                     <span>S/ {{ getSubtotalNeto() | number:'1.2-2' }}</span>
                 </div>
+                <!-- Solo muestra si hay descuento global -->
                 <div class="fila-total" *ngIf="descuentoGlobalPorcentaje > 0">
                     <span>Desc. global ({{ descuentoGlobalPorcentaje }}%)</span>
                     <span>- S/ {{ getDescuentoGlobalMonto() | number:'1.2-2' }}</span>
@@ -129,6 +141,7 @@
                 </div>
             </div>
 
+            <!-- Botón deshabilitado si falta cliente, método de pago o carrito vacío -->
             <button class="btn-confirmar-venta" [disabled]="!puedeGuardar()" (click)="confirmarVenta()"
                 *ngIf="carrito.length > 0">
                 {{ guardando ? 'Guardando...' : 'Confirmar Venta' }}
@@ -140,7 +153,7 @@
 
 </div>
 
-<!-- MODAL NUEVO CLIENTE -->
+<!-- MODAL NUEVO CLIENTE: creación rápida desde la venta -->
 <div class="overlay-global" *ngIf="modalNuevoCliente" (click)="cerrarNuevoCliente()">
     <div class="modal-global" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -148,6 +161,7 @@
             <button class="btn-cerrar-g" (click)="cerrarNuevoCliente()">✕</button>
         </div>
         <div class="modal-body-g">
+            <!-- Error de validación del formulario -->
             <div class="error-banner-modal" *ngIf="errorNuevoCliente">{{ errorNuevoCliente }}</div>
 
             <label class="label-form">Tipo</label>
@@ -161,16 +175,19 @@
                 placeholder="Nombre completo" />
 
             <label class="label-form">Documento (máx. 8 dígitos)</label>
+            <!-- Solo acepta números, máximo 8 dígitos -->
             <input type="text" [(ngModel)]="formNuevoCliente.documento" class="input-form" placeholder="12345678"
                 maxlength="8" (keypress)="soloNumerosModal($event)" />
 
             <label class="label-form">Teléfono (9 dígitos)</label>
+            <!-- Solo acepta números, máximo 9 dígitos -->
             <input type="text" [(ngModel)]="formNuevoCliente.telefono" class="input-form" placeholder="987654321"
                 maxlength="9" (keypress)="soloNumerosModal($event)" />
 
             <label class="label-form">Correo</label>
             <input type="email" [(ngModel)]="formNuevoCliente.correo" class="input-form"
                 placeholder="correo@ejemplo.com" (blur)="validarCorreoModal()" />
+            <!-- Error de formato de correo -->
             <span class="campo-error" *ngIf="errorCorreo">{{ errorCorreo }}</span>
         </div>
         <div class="modal-footer-g">
@@ -180,7 +197,7 @@
     </div>
 </div>
 
-<!-- MODAL ÉXITO -->
+<!-- MODAL ÉXITO: confirmación de venta registrada -->
 <div class="overlay-global" *ngIf="modalExito">
     <div class="modal-global modal-small">
         <div class="modal-header-g exito">
@@ -191,7 +208,9 @@
             <p class="total-exito">Total: S/ {{ ventaCreada?.total | number:'1.2-2' }}</p>
         </div>
         <div class="modal-footer-g">
+            <!-- Nueva venta: limpia el carrito y recarga stock -->
             <button class="btn-cancelar-g" (click)="cerrarExitoYNueva()">Nueva Venta</button>
+            <!-- Ver caja: redirige al resumen del día -->
             <button class="btn-confirmar-g" (click)="irACaja()">Ver Caja del Día</button>
         </div>
     </div>

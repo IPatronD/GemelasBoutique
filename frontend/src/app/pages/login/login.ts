@@ -10,19 +10,24 @@ import { Router } from '@angular/router';
   styleUrl: './login.scss',
 })
 export class Login {
+
+  // Campos del formulario
   username = '';
   password = '';
+
+  // Mensaje de error si el login falla
   error = '';
 
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(private auth: Auth, private router: Router) { }
 
   login() {
     this.auth.login(this.username, this.password).subscribe({
       next: (res) => {
+        // Guarda el token y el rol en localStorage
         this.auth.guardarToken(res.token);
         this.auth.guardarRol(res.rol);
 
-        // Redirigir según rol
+        // Redirige según el rol del usuario
         if (res.rol === 'ROLE_ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else if (res.rol === 'ROLE_SUPERVISORA') {
@@ -34,6 +39,7 @@ export class Login {
         }
       },
       error: () => {
+        // Muestra error si las credenciales son incorrectas
         this.error = 'Usuario o contraseña incorrectos';
       },
     });

@@ -13,18 +13,29 @@ import { EmpleadoService } from '../../../services/empleado';
 })
 export class ListarEmpleados implements OnInit {
 
+  // Lista completa y lista filtrada de empleados
   empleados: any[] = [];
   empleadosFiltrados: any[] = [];
+
+  // Estado de carga
   cargando = true;
+
+  // Texto de búsqueda
   busqueda = '';
+
+  // Controla si se ven activos o inactivos
   verInactivos = false;
 
+  // Control de modales
   modalFormAbierto = false;
   modoEdicion = false;
+
+  // Empleado que se está editando o desactivando
   empleadoSeleccionado: any = null;
   empleadoADesactivar: any = null;
   modalDesactivar = false;
 
+  // Datos del formulario
   form: any = {
     nombres: '',
     apellidos: '',
@@ -43,6 +54,7 @@ export class ListarEmpleados implements OnInit {
     this.cargarEmpleados();
   }
 
+  // Trae todos los empleados del backend
   cargarEmpleados() {
     this.empleadoService.listar().subscribe({
       next: (data) => {
@@ -58,6 +70,7 @@ export class ListarEmpleados implements OnInit {
     });
   }
 
+  // Filtra por nombre, apellido, DNI o correo y por estado activo/inactivo
   filtrar() {
     const q = this.busqueda.toLowerCase();
     this.empleadosFiltrados = this.empleados.filter(e => {
@@ -71,16 +84,19 @@ export class ListarEmpleados implements OnInit {
     });
   }
 
+  // Cambia entre ver activos e inactivos
   cambiarVista(inactivos: boolean) {
     this.verInactivos = inactivos;
     this.filtrar();
     this.cdr.detectChanges();
   }
 
+  // Verifica si el empleado ya tiene usuario asignado
   tieneUsuario(empleado: any): boolean {
     return !!empleado.usuario;
   }
 
+  // Abre el modal para crear un nuevo empleado
   abrirNuevo() {
     this.modoEdicion = false;
     this.form = { nombres: '', apellidos: '', dni: '', correo: '', estado: true };
@@ -89,6 +105,7 @@ export class ListarEmpleados implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Abre el modal con los datos del empleado a editar
   abrirEditar(empleado: any) {
     this.modoEdicion = true;
     this.empleadoSeleccionado = empleado;
@@ -104,6 +121,7 @@ export class ListarEmpleados implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal del formulario
   cerrarForm() {
     this.modalFormAbierto = false;
     this.empleadoSeleccionado = null;
@@ -111,10 +129,12 @@ export class ListarEmpleados implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Permite solo números en el campo DNI
   soloNumeros(event: KeyboardEvent): boolean {
     return /[0-9]/.test(event.key);
   }
 
+  // Guarda o actualiza según el modo
   guardar() {
     if (this.modoEdicion) {
       this.empleadoService.actualizar(this.empleadoSeleccionado.id, this.form).subscribe({
@@ -129,6 +149,7 @@ export class ListarEmpleados implements OnInit {
     }
   }
 
+  // Abre el modal de confirmación para desactivar
   confirmarDesactivar(empleado: any) {
     this.empleadoADesactivar = empleado;
     this.modalDesactivar = true;
@@ -136,6 +157,7 @@ export class ListarEmpleados implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Desactiva el empleado en el backend y actualiza la lista
   desactivar() {
     this.empleadoService.eliminar(this.empleadoADesactivar.id).subscribe({
       next: () => {
@@ -155,6 +177,7 @@ export class ListarEmpleados implements OnInit {
     });
   }
 
+  // Cancela la desactivación y cierra el modal
   cancelarDesactivar() {
     this.modalDesactivar = false;
     this.empleadoADesactivar = null;
@@ -162,6 +185,7 @@ export class ListarEmpleados implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Reactiva un empleado inactivo
   activar(empleado: any) {
     const payload = { ...empleado, estado: true };
     this.empleadoService.actualizar(empleado.id, payload).subscribe({

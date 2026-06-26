@@ -13,17 +13,26 @@ import { MetodoPagoService } from '../../../services/metodo-pago';
 })
 export class ListarMetodosPago implements OnInit {
 
+  // Lista completa y lista filtrada de métodos de pago
   metodos: any[] = [];
   metodosFiltrados: any[] = [];
+
+  // Estado de carga
   cargando = true;
+
+  // Texto de búsqueda
   busqueda = '';
 
+  // Control de modales
   modalFormAbierto = false;
   modalEliminar = false;
   modoEdicion = false;
+
+  // Método que se está editando o eliminando
   metodoSeleccionado: any = null;
   metodoAEliminar: any = null;
 
+  // Datos del formulario
   form: any = { nombre: '', descripcion: '' };
 
   constructor(
@@ -36,6 +45,7 @@ export class ListarMetodosPago implements OnInit {
     this.cargarMetodos();
   }
 
+  // Trae todos los métodos de pago del backend
   cargarMetodos() {
     this.metodoPagoService.listar().subscribe({
       next: (data) => {
@@ -51,6 +61,7 @@ export class ListarMetodosPago implements OnInit {
     });
   }
 
+  // Filtra por nombre o descripción
   filtrar() {
     const q = this.busqueda.toLowerCase();
     this.metodosFiltrados = this.metodos.filter(m =>
@@ -59,6 +70,7 @@ export class ListarMetodosPago implements OnInit {
     );
   }
 
+  // Abre el modal para crear un nuevo método
   abrirNuevo() {
     this.modoEdicion = false;
     this.form = { nombre: '', descripcion: '' };
@@ -67,6 +79,7 @@ export class ListarMetodosPago implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Abre el modal con los datos del método a editar
   abrirEditar(metodo: any) {
     this.modoEdicion = true;
     this.metodoSeleccionado = metodo;
@@ -79,6 +92,7 @@ export class ListarMetodosPago implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal del formulario
   cerrarForm() {
     this.modalFormAbierto = false;
     this.metodoSeleccionado = null;
@@ -86,6 +100,7 @@ export class ListarMetodosPago implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Guarda o actualiza según el modo
   guardar() {
     if (this.modoEdicion) {
       this.metodoPagoService.actualizar(this.metodoSeleccionado.id, this.form).subscribe({
@@ -109,6 +124,7 @@ export class ListarMetodosPago implements OnInit {
     }
   }
 
+  // Abre el modal de confirmación para eliminar
   confirmarEliminar(metodo: any) {
     this.metodoAEliminar = metodo;
     this.modalEliminar = true;
@@ -116,6 +132,7 @@ export class ListarMetodosPago implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Elimina el método del backend y lo quita de la lista
   eliminar() {
     this.metodoPagoService.eliminar(this.metodoAEliminar.id).subscribe({
       next: () => {
@@ -134,6 +151,7 @@ export class ListarMetodosPago implements OnInit {
     });
   }
 
+  // Cancela la eliminación y cierra el modal
   cancelarEliminar() {
     this.modalEliminar = false;
     this.metodoAEliminar = null;

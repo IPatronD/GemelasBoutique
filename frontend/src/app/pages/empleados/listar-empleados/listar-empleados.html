@@ -1,24 +1,29 @@
 <div class="page-header">
     <h1>Empleados</h1>
     <span class="badge">{{ empleadosFiltrados.length }} registros</span>
+    <!-- Solo admin puede crear empleados -->
     <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Empleado</button>
 </div>
 
+<!-- Búsqueda por nombre, DNI o correo -->
 <div class="filtros">
     <input type="text" placeholder="Buscar por nombre, DNI o correo..." [(ngModel)]="busqueda" (input)="filtrar()"
         class="input-busqueda" />
 </div>
 
+<!-- Toggle para ver activos o inactivos -->
 <div class="toggle-estado">
     <button [class.activo]="!verInactivos" (click)="cambiarVista(false)">Activos</button>
     <button [class.activo]="verInactivos" (click)="cambiarVista(true)">Inactivos</button>
 </div>
 
+<!-- Spinner mientras carga -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando empleados...</p>
 </div>
 
+<!-- Tabla de empleados -->
 <div class="card" *ngIf="!cargando">
     <table class="tabla">
         <thead>
@@ -40,16 +45,19 @@
                 <td>{{ e.dni }}</td>
                 <td>{{ e.correo }}</td>
                 <td>
+                    <!-- Badge de estado con color verde/rojo -->
                     <span class="estado-badge" [class.activo]="e.estado" [class.inactivo]="!e.estado">
                         {{ e.estado ? 'Activo' : 'Inactivo' }}
                     </span>
                 </td>
                 <td>
                     <div class="acciones">
+                        <!-- Activos: botones editar y desactivar -->
                         <ng-container *ngIf="e.estado">
                             <button class="btn-editar" (click)="abrirEditar(e)">✏️ Editar</button>
                             <button class="btn-eliminar" (click)="confirmarDesactivar(e)">🚫 Desactivar</button>
                         </ng-container>
+                        <!-- Inactivos: solo botón activar -->
                         <ng-container *ngIf="!e.estado">
                             <button class="btn-activar" (click)="activar(e)">✅ Activar</button>
                         </ng-container>
@@ -63,7 +71,7 @@
     </div>
 </div>
 
-<!-- MODAL FORM -->
+<!-- MODAL FORM: crear o editar empleado -->
 <div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
     <div class="modal-global" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -83,6 +91,7 @@
             </div>
             <div class="form-group">
                 <label>DNI</label>
+                <!-- DNI bloqueado en modo edición -->
                 <input type="text" [(ngModel)]="form.dni" placeholder="8 dígitos" maxlength="8"
                     (keypress)="soloNumeros($event)" [readonly]="modoEdicion" [class.readonly]="modoEdicion" />
             </div>
@@ -100,7 +109,7 @@
     </div>
 </div>
 
-<!-- MODAL DESACTIVAR -->
+<!-- MODAL DESACTIVAR: confirmación antes de desactivar -->
 <div class="overlay-global" *ngIf="modalDesactivar">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">

@@ -11,18 +11,23 @@ import { CommonModule } from '@angular/common';
   styleUrl: './layout-vendedora.scss'
 })
 export class LayoutVendedora {
+
+  // Controla si el sidebar está abierto o cerrado
   menuAbierto = true;
 
   constructor(private auth: Auth, private router: Router) { }
 
+  // Alterna el estado del sidebar al presionar ☰
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
   }
 
+  // Cierra la sesión y redirige al login
   logout() {
     this.auth.logout();
   }
 
+  // Navega a la ruta indicada
   navegarA(ruta: string) {
     this.router.navigate([ruta]);
   }

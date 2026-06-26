@@ -1,17 +1,22 @@
+<!-- SPINNER — se muestra mientras cargan los datos -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando...</p>
 </div>
 
+<!-- CONTENIDO PRINCIPAL — se muestra cuando los datos están listos -->
 <div *ngIf="!cargando && resumen">
 
+    <!-- Encabezado del dashboard -->
     <div class="dashboard-header">
         <h1>Panel de Supervisión</h1>
         <span class="fecha">{{ anioActual }}</span>
     </div>
 
-    <!-- TARJETAS -->
+    <!-- TARJETAS DE MÉTRICAS — resumen rápido de indicadores -->
     <div class="tarjetas">
+
+        <!-- Tarjeta: Total vendido hoy -->
         <div class="tarjeta">
             <div class="tarjeta-icono ventas-hoy">💰</div>
             <div class="tarjeta-info">
@@ -19,6 +24,8 @@
                 <span class="tarjeta-label">Ventas Hoy</span>
             </div>
         </div>
+
+        <!-- Tarjeta: Total vendido en el mes -->
         <div class="tarjeta">
             <div class="tarjeta-icono ventas-mes">📈</div>
             <div class="tarjeta-info">
@@ -26,6 +33,8 @@
                 <span class="tarjeta-label">Ventas del Mes</span>
             </div>
         </div>
+
+        <!-- Tarjeta: Total de clientes registrados -->
         <div class="tarjeta">
             <div class="tarjeta-icono clientes">👥</div>
             <div class="tarjeta-info">
@@ -33,6 +42,8 @@
                 <span class="tarjeta-label">Clientes Registrados</span>
             </div>
         </div>
+
+        <!-- Tarjeta: Cantidad de ventas realizadas hoy -->
         <div class="tarjeta">
             <div class="tarjeta-icono ventas-count">🧾</div>
             <div class="tarjeta-info">
@@ -40,17 +51,20 @@
                 <span class="tarjeta-label">Ventas de Hoy</span>
             </div>
         </div>
+
     </div>
 
-    <!-- FILA 2 -->
+    <!-- FILA 2: Gráfico de barras + Métodos de pago -->
     <div class="fila-dos">
 
-        <!-- VENTAS POR MES -->
+        <!-- Gráfico de ventas por mes -->
         <div class="card grafico">
             <h3>Ventas por Mes {{ anioActual }}</h3>
             <div class="barras">
+                <!-- Cada barra representa un mes -->
                 <div class="barra-item" *ngFor="let v of resumen.ventasPorMes">
                     <div class="barra-contenedor">
+                        <!-- Altura de la barra proporcional al total del mes -->
                         <div class="barra-fill" [style.height]="getBarraAncho(v.total)"></div>
                     </div>
                     <span class="barra-mes">{{ getNombreMes(v.mes) }}</span>
@@ -62,7 +76,7 @@
             </div>
         </div>
 
-        <!-- MÉTODOS DE PAGO -->
+        <!-- Resumen de ventas por método de pago -->
         <div class="card">
             <h3>Métodos de Pago</h3>
             <div class="metodo-item" *ngFor="let m of resumen.ventasPorMetodoPago">
@@ -79,10 +93,10 @@
 
     </div>
 
-    <!-- FILA 3 -->
+    <!-- FILA 3: Últimas ventas + Productos más vendidos -->
     <div class="fila-dos">
 
-        <!-- ÚLTIMAS VENTAS -->
+        <!-- Tabla de las últimas 5 ventas -->
         <div class="card">
             <h3>Últimas Ventas</h3>
             <table class="tabla">
@@ -108,7 +122,7 @@
             </div>
         </div>
 
-        <!-- MÁS VENDIDOS -->
+        <!-- Tabla de los 5 productos más vendidos -->
         <div class="card">
             <h3>Productos Más Vendidos</h3>
             <table class="tabla">
@@ -136,6 +150,7 @@
 
 </div>
 
+<!-- MENSAJE DE ERROR — si no se pudieron cargar los datos -->
 <div class="sin-conexion" *ngIf="!cargando && !resumen">
     <p>⚠️ No se pudo cargar el panel</p>
 </div>

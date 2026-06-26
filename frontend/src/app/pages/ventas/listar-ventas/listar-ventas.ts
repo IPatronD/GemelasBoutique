@@ -14,16 +14,16 @@ import { Auth } from '../../../services/auth';
 })
 export class ListarVentas implements OnInit {
 
-  ventas: any[] = [];
-  ventasFiltradas: any[] = [];
-  ventaDetalle: any = null;
+  ventas: any[] = [];          // Lista completa del backend
+  ventasFiltradas: any[] = []; // Lista después de aplicar filtros
+  ventaDetalle: any = null;    // Venta seleccionada para ver detalle
   cargando = true;
-  busqueda = '';
-  filtroMetodo = '';
-  modalAbierto = false;
-  modalEliminar = false;
-  ventaAEliminar: any = null;
-  esAdmin = false;
+  busqueda = '';               // Filtro por nombre de cliente
+  filtroMetodo = '';           // Filtro por método de pago
+  modalAbierto = false;        // Controla modal de detalle
+  modalEliminar = false;       // Controla modal de confirmación
+  ventaAEliminar: any = null;  // Venta pendiente de eliminar
+  esAdmin = false;             // Solo el admin puede eliminar ventas
 
   constructor(
     private ventaService: VentaService,
@@ -33,13 +33,16 @@ export class ListarVentas implements OnInit {
   ) { }
 
   ngOnInit() {
+    // Detecta el rol para controlar el botón de eliminar
     this.esAdmin = this.auth.esAdmin();
     this.cargarVentas();
   }
 
   cargarVentas() {
+    // GET /api/ventas — trae todas las ventas
     this.ventaService.listar().subscribe({
       next: (data) => {
+        // Ordena de más reciente a más antigua
         this.ventas = data.sort((a: any, b: any) =>
           new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
         this.ventasFiltradas = [...this.ventas];
@@ -55,8 +58,10 @@ export class ListarVentas implements OnInit {
 
   filtrar() {
     this.ventasFiltradas = this.ventas.filter(v => {
+      // Filtra por nombre del cliente
       const coincideCliente = v.cliente?.nombres
         ?.toLowerCase().includes(this.busqueda.toLowerCase());
+      // Filtra por método de pago (si hay uno seleccionado)
       const coincideMetodo = this.filtroMetodo
         ? v.metodoPago?.nombre === this.filtroMetodo
         : true;
@@ -64,6 +69,7 @@ export class ListarVentas implements OnInit {
     });
   }
 
+  // Abre el modal con el detalle de la venta seleccionada
   verDetalle(venta: any) {
     this.ventaDetalle = venta;
     this.modalAbierto = true;
@@ -78,6 +84,7 @@ export class ListarVentas implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Abre el modal de confirmación para eliminar
   confirmarEliminar(venta: any) {
     this.ventaAEliminar = venta;
     this.modalEliminar = true;
@@ -87,8 +94,10 @@ export class ListarVentas implements OnInit {
 
   eliminar() {
     if (!this.ventaAEliminar) return;
+    // DELETE /api/ventas/{id}
     this.ventaService.eliminar(this.ventaAEliminar.id).subscribe({
       next: () => {
+        // Elimina de la lista local sin recargar todo
         this.ventas = this.ventas.filter(v => v.id !== this.ventaAEliminar.id);
         this.filtrar();
         this.modalEliminar = false;
@@ -111,13 +120,15 @@ export class ListarVentas implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Extrae los métodos de pago únicos de la lista para el select de filtros
   getMetodos(): string[] {
     const metodos = this.ventas
       .map(v => v.metodoPago?.nombre)
-      .filter(m => !!m);
-    return [...new Set(metodos)];
+      .filter(m => !!m); // elimina nulls
+    return [...new Set(metodos)]; // elimina duplicados
   }
 
+  // Formatea la fecha al formato peruano con hora
   formatFecha(fecha: string): string {
     return new Date(fecha).toLocaleDateString('es-PE', {
       day: '2-digit', month: '2-digit', year: 'numeric',

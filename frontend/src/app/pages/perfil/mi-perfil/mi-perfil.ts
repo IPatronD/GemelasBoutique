@@ -15,14 +15,17 @@ import { EmpleadoService } from '../../../services/empleado';
 })
 export class MiPerfil implements OnInit {
 
+  // Datos del usuario logueado
   perfil: any = null;
   cargando = true;
 
+  // Control del modal de cambiar contraseña
   modalPassword = false;
   formPassword: any = { nueva: '', confirmar: '' };
   errorPassword = '';
   exitoPassword = false;
 
+  // Control del modal de editar perfil
   modalEditar = false;
   formEditar: any = { nombres: '', apellidos: '', correo: '', username: '' };
   errorEditar = '';
@@ -39,6 +42,7 @@ export class MiPerfil implements OnInit {
     this.cargarPerfil();
   }
 
+  // Trae los datos del usuario logueado desde el backend
   cargarPerfil() {
     this.auth.me().subscribe({
       next: (data) => {
@@ -53,6 +57,7 @@ export class MiPerfil implements OnInit {
     });
   }
 
+  // Convierte el rol técnico a un nombre legible
   getRolLabel(): string {
     const roles: any = {
       'ROLE_ADMIN': 'Administrador',
@@ -64,6 +69,7 @@ export class MiPerfil implements OnInit {
 
   // ── CAMBIAR CONTRASEÑA ──
 
+  // Abre el modal de cambiar contraseña
   abrirCambiarPassword() {
     this.formPassword = { nueva: '', confirmar: '' };
     this.errorPassword = '';
@@ -72,20 +78,24 @@ export class MiPerfil implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal de cambiar contraseña
   cerrarPassword() {
     this.modalPassword = false;
     this.cdr.detectChanges();
   }
 
+  // Valida y envía la nueva contraseña al backend
   cambiarPassword() {
     this.errorPassword = '';
     this.exitoPassword = false;
 
+    // Valida mínimo 6 caracteres
     if (!this.formPassword.nueva || this.formPassword.nueva.length < 6) {
       this.errorPassword = 'La contraseña debe tener al menos 6 caracteres.';
       return;
     }
 
+    // Valida que ambas contraseñas coincidan
     if (this.formPassword.nueva !== this.formPassword.confirmar) {
       this.errorPassword = 'Las contraseñas no coinciden.';
       return;
@@ -113,6 +123,7 @@ export class MiPerfil implements OnInit {
 
   // ── EDITAR PERFIL ──
 
+  // Abre el modal con los datos actuales del perfil
   abrirEditar() {
     this.formEditar = {
       nombres: this.perfil.empleado.nombres,
@@ -126,11 +137,13 @@ export class MiPerfil implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal de editar perfil
   cerrarEditar() {
     this.modalEditar = false;
     this.cdr.detectChanges();
   }
 
+  // Guarda los cambios del perfil: primero actualiza el empleado, luego el usuario
   guardarPerfil() {
     this.errorEditar = '';
 
@@ -142,6 +155,7 @@ export class MiPerfil implements OnInit {
       estado: true
     };
 
+    // Actualiza los datos del empleado
     this.empleadoService.actualizar(this.perfil.empleado.id, payloadEmpleado).subscribe({
       next: () => {
         const payloadUsuario = {
@@ -151,12 +165,13 @@ export class MiPerfil implements OnInit {
           roles: [{ id: this.perfil.rolId }]
         };
 
+        // Actualiza el username del usuario
         this.usuarioService.actualizar(this.perfil.id, payloadUsuario).subscribe({
           next: () => {
             this.exitoEditar = true;
             this.cdr.detectChanges();
 
-            // Si cambió el username, cerrar sesión para que vuelva a loguearse
+            // Si cambió el username, cierra sesión por seguridad
             if (this.formEditar.username !== this.perfil.username) {
               setTimeout(() => {
                 alert('Username actualizado. Por seguridad, vuelve a iniciar sesión.');

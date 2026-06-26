@@ -1,15 +1,19 @@
+<!-- Encabezado con botón de nueva venta -->
 <div class="page-header">
     <h1>💰 Caja del Día</h1>
     <button class="btn-nueva-venta" (click)="irANuevaVenta()">+ Nueva Venta</button>
 </div>
 
+<!-- Spinner mientras cargan los datos -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando ventas del día...</p>
 </div>
 
+<!-- Contenido principal, solo visible cuando termina de cargar -->
 <div *ngIf="!cargando">
 
+    <!-- Tarjetas de resumen: total e cantidad de ventas -->
     <div class="tarjetas-resumen">
         <div class="tarjeta">
             <span class="tarjeta-valor">S/ {{ getTotalDia() | number:'1.2-2' }}</span>
@@ -21,6 +25,7 @@
         </div>
     </div>
 
+    <!-- Tabla con el detalle de cada venta del día -->
     <div class="card">
         <h3>Detalle de Ventas de Hoy</h3>
         <table class="tabla">
@@ -33,6 +38,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Itera cada venta y muestra sus datos -->
                 <tr *ngFor="let v of ventas">
                     <td>{{ formatFecha(v.fecha) }}</td>
                     <td>{{ v.cliente?.nombres || 'Sin cliente' }}</td>
@@ -41,6 +47,7 @@
                 </tr>
             </tbody>
         </table>
+        <!-- Mensaje si no hay ventas aún -->
         <div class="sin-datos" *ngIf="ventas.length === 0">
             Aún no se han registrado ventas hoy
         </div>

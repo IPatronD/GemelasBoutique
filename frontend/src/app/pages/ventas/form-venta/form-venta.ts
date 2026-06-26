@@ -7,6 +7,7 @@ import { ClienteService } from '../../../services/cliente';
 import { MetodoPagoService } from '../../../services/metodo-pago';
 import { VentaService } from '../../../services/venta';
 
+// Estructura de cada item en el carrito
 interface ItemCarrito {
   productoId: number;
   nombre: string;
@@ -26,39 +27,42 @@ interface ItemCarrito {
 })
 export class FormVenta implements OnInit {
 
-  // Datos cargados
+  // Listas cargadas del backend
   productos: any[] = [];
   productosFiltrados: any[] = [];
   clientes: any[] = [];
   clientesFiltrados: any[] = [];
   metodosPago: any[] = [];
 
-  // Búsquedas
+  // Texto de búsqueda de productos y clientes
   busquedaProducto = '';
   busquedaCliente = '';
   mostrarListaClientes = false;
 
-  // Carrito y venta
+  // Datos de la venta en curso
   carrito: ItemCarrito[] = [];
   clienteSeleccionado: any = null;
   metodoPagoId: number | null = null;
   descuentoGlobalPorcentaje = 0;
 
-  // Estado
+  // Estados de carga y guardado
   cargando = true;
   guardando = false;
   error = '';
 
-  // Modal nuevo cliente rápido
+  // Modal para crear un cliente rápido desde la venta
   modalNuevoCliente = false;
   formNuevoCliente: any = {
     tipo: 'Natural', nombres: '', documento: '', telefono: '', correo: ''
   };
   errorNuevoCliente = '';
 
-  // Modal confirmación / éxito
+  // Modal de éxito al confirmar la venta
   modalExito = false;
   ventaCreada: any = null;
+
+  // Error de validación del correo en el modal de nuevo cliente
+  errorCorreo = '';
 
   constructor(
     private productoService: ProductoService,
@@ -74,12 +78,13 @@ export class FormVenta implements OnInit {
     this.cargarDatos();
   }
 
+  // Carga productos, clientes y métodos de pago en paralelo
   cargarDatos() {
     this.cargando = true;
 
     this.productoService.listar().subscribe({
       next: (productos) => {
-        // Solo productos con stock > 0 se muestran para vender
+        // Solo muestra productos con stock disponible
         this.productos = productos.filter((p: any) => p.stock > 0);
         this.productosFiltrados = [...this.productos];
         this.verificarCargaCompleta();
@@ -89,6 +94,7 @@ export class FormVenta implements OnInit {
 
     this.clienteService.listar().subscribe({
       next: (clientes) => {
+        // Solo clientes activos
         this.clientes = clientes.filter((c: any) => c.estado);
         this.verificarCargaCompleta();
       },
@@ -104,6 +110,7 @@ export class FormVenta implements OnInit {
     });
   }
 
+  // Contador para saber cuándo terminaron las 3 cargas
   private cargasCompletadas = 0;
   private verificarCargaCompleta() {
     this.cargasCompletadas++;
@@ -115,6 +122,7 @@ export class FormVenta implements OnInit {
 
   // ── BÚSQUEDA DE PRODUCTOS ──
 
+  // Filtra productos por nombre o categoría
   filtrarProductos() {
     const termino = this.busquedaProducto.toLowerCase().trim();
     if (!termino) {
@@ -129,6 +137,7 @@ export class FormVenta implements OnInit {
 
   // ── CARRITO ──
 
+  // Agrega un producto al carrito o aumenta su cantidad si ya existe
   agregarAlCarrito(producto: any) {
     const yaExiste = this.carrito.find(i => i.productoId === producto.id);
 
@@ -152,6 +161,7 @@ export class FormVenta implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Aumenta la cantidad de un item sin superar el stock
   incrementar(item: ItemCarrito) {
     if (item.cantidad < item.stockDisponible) {
       item.cantidad++;
@@ -161,6 +171,7 @@ export class FormVenta implements OnInit {
     }
   }
 
+  // Reduce la cantidad — si llega a 0 quita el item del carrito
   decrementar(item: ItemCarrito) {
     if (item.cantidad > 1) {
       item.cantidad--;
@@ -169,10 +180,12 @@ export class FormVenta implements OnInit {
     }
   }
 
+  // Elimina un item del carrito
   quitarDelCarrito(item: ItemCarrito) {
     this.carrito = this.carrito.filter(i => i.productoId !== item.productoId);
   }
 
+  // Vacía el carrito y resetea todos los campos de la venta
   limpiarCarrito() {
     this.carrito = [];
     this.clienteSeleccionado = null;
@@ -181,78 +194,78 @@ export class FormVenta implements OnInit {
     this.busquedaCliente = '';
   }
 
-  // ── CÁLCULOS (preview en vivo, el backend recalcula igual) ──
+  // ── CÁLCULOS (el backend recalcula también, esto es solo para el preview) ──
 
+  // Subtotal de un item con su descuento individual
   getSubtotalItem(item: ItemCarrito): number {
     const bruto = item.cantidad * item.precio;
     const desc = bruto * (item.descuentoPorcentaje / 100);
     return Math.round((bruto - desc) * 100) / 100;
   }
 
+  // Subtotal bruto sin descuentos
   getSubtotalBruto(): number {
     return this.carrito.reduce((acc, i) => acc + (i.cantidad * i.precio), 0);
   }
 
+  // Subtotal neto con descuentos individuales aplicados
   getSubtotalNeto(): number {
     return this.carrito.reduce((acc, i) => acc + this.getSubtotalItem(i), 0);
   }
 
+  // Monto del descuento global en soles
   getDescuentoGlobalMonto(): number {
     return Math.round(this.getSubtotalNeto() * (this.descuentoGlobalPorcentaje / 100) * 100) / 100;
   }
 
+  // Base imponible después de descuento global
   getBaseImponible(): number {
     const base = this.getSubtotalNeto() - this.getDescuentoGlobalMonto();
     return base > 0 ? Math.round(base * 100) / 100 : 0;
   }
 
+  // IVA del 16% sobre la base imponible
   getIva(): number {
     return Math.round(this.getBaseImponible() * 0.16 * 100) / 100;
   }
 
+  // Total final = base imponible + IVA
   getTotal(): number {
     return Math.round((this.getBaseImponible() + this.getIva()) * 100) / 100;
   }
 
-  // ── DESCUENTO GLOBAL: validación estricta 0-100, solo números ──
+  // ── DESCUENTO GLOBAL: validación estricta 0-100 ──
 
+  // Bloquea teclas que no sean dígitos o que harían superar 100
   bloquearTeclaSiExcede(event: KeyboardEvent) {
-    // Teclas de control siempre permitidas
     const teclasPermitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
-    if (teclasPermitidas.includes(event.key) || event.ctrlKey || event.metaKey) {
-      return;
-    }
+    if (teclasPermitidas.includes(event.key) || event.ctrlKey || event.metaKey) return;
 
-    // Bloquea cualquier cosa que no sea un dígito del 0 al 9
     if (!/^[0-9]$/.test(event.key)) {
       event.preventDefault();
       return;
     }
 
-    // Si es dígito, valida que no exceda 100
     const input = event.target as HTMLInputElement;
     const valorActual = input.value;
     const cursorPos = input.selectionStart ?? valorActual.length;
     const valorSimulado = valorActual.slice(0, cursorPos) + event.key + valorActual.slice(cursorPos);
     const numeroSimulado = parseInt(valorSimulado, 10);
 
-    if (numeroSimulado > 100) {
-      event.preventDefault();
-    }
+    if (numeroSimulado > 100) event.preventDefault();
   }
 
+  // Bloquea pegar texto y solo acepta números entre 0 y 100
   bloquearPegado(event: ClipboardEvent) {
     event.preventDefault();
     const texto = event.clipboardData?.getData('text') ?? '';
     const soloNumeros = texto.replace(/[^0-9]/g, '');
     const numero = parseInt(soloNumeros, 10);
-
-    if (!isNaN(numero)) {
-      this.descuentoGlobalPorcentaje = Math.min(numero, 100);
-    }
+    if (!isNaN(numero)) this.descuentoGlobalPorcentaje = Math.min(numero, 100);
     this.cdr.detectChanges();
   }
 
+  // Corrige el valor si está fuera del rango 0-100
   validarDescuento() {
     if (this.descuentoGlobalPorcentaje === null || this.descuentoGlobalPorcentaje === undefined) {
       this.descuentoGlobalPorcentaje = 0;
@@ -266,6 +279,7 @@ export class FormVenta implements OnInit {
 
   // ── CLIENTE ──
 
+  // Busca clientes activos por nombre o documento
   buscarClientes() {
     const termino = this.busquedaCliente.toLowerCase().trim();
     if (!termino) {
@@ -280,17 +294,20 @@ export class FormVenta implements OnInit {
     this.mostrarListaClientes = true;
   }
 
+  // Selecciona un cliente de la lista
   seleccionarCliente(cliente: any) {
     this.clienteSeleccionado = cliente;
     this.busquedaCliente = cliente.nombres;
     this.mostrarListaClientes = false;
   }
 
+  // Quita el cliente seleccionado
   quitarCliente() {
     this.clienteSeleccionado = null;
     this.busquedaCliente = '';
   }
 
+  // Abre el modal para crear un cliente rápido
   abrirNuevoCliente() {
     this.formNuevoCliente = { tipo: 'Natural', nombres: '', documento: '', telefono: '', correo: '' };
     this.errorNuevoCliente = '';
@@ -300,12 +317,14 @@ export class FormVenta implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal de nuevo cliente
   cerrarNuevoCliente() {
     this.modalNuevoCliente = false;
     this.document.body.classList.remove('modal-open');
     this.cdr.detectChanges();
   }
 
+  // Valida y guarda el nuevo cliente, luego lo selecciona automáticamente
   guardarNuevoCliente() {
     this.errorNuevoCliente = '';
     const f = this.formNuevoCliente;
@@ -329,12 +348,8 @@ export class FormVenta implements OnInit {
     }
 
     const payload = {
-      tipo: f.tipo,
-      nombres: f.nombres,
-      documento: f.documento,
-      telefono: f.telefono,
-      correo: f.correo,
-      estado: true
+      tipo: f.tipo, nombres: f.nombres, documento: f.documento,
+      telefono: f.telefono, correo: f.correo, estado: true
     };
 
     this.clienteService.guardar(payload).subscribe({
@@ -354,6 +369,7 @@ export class FormVenta implements OnInit {
 
   // ── GUARDAR VENTA ──
 
+  // Verifica que el carrito, cliente y método de pago estén listos
   puedeGuardar(): boolean {
     return this.carrito.length > 0 &&
       !!this.clienteSeleccionado &&
@@ -361,6 +377,7 @@ export class FormVenta implements OnInit {
       !this.guardando;
   }
 
+  // Construye el payload y envía la venta al backend
   confirmarVenta() {
     if (!this.puedeGuardar()) {
       if (this.carrito.length === 0) this.error = 'Agrega al menos un producto.';
@@ -401,6 +418,7 @@ export class FormVenta implements OnInit {
     });
   }
 
+  // Cierra el modal de éxito y prepara una nueva venta
   cerrarExitoYNueva() {
     this.modalExito = false;
     this.document.body.classList.remove('modal-open');
@@ -409,18 +427,19 @@ export class FormVenta implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Redirige a la caja del día después de confirmar
   irACaja() {
     this.modalExito = false;
     this.document.body.classList.remove('modal-open');
     this.router.navigate(['/vendedora/caja']);
   }
 
-  errorCorreo = '';
-
+  // Solo permite números en los campos del modal de nuevo cliente
   soloNumerosModal(event: KeyboardEvent): boolean {
     return /[0-9]/.test(event.key);
   }
 
+  // Valida el formato del correo en el modal de nuevo cliente
   validarCorreoModal() {
     const correo = this.formNuevoCliente.correo;
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

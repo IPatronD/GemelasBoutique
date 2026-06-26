@@ -1,19 +1,23 @@
 <div class="page-header">
     <h1>Métodos de Pago</h1>
     <span class="badge">{{ metodosFiltrados.length }} registros</span>
+    <!-- Solo admin puede crear métodos de pago -->
     <button class="btn-nuevo" (click)="abrirNuevo()">+ Nuevo Método</button>
 </div>
 
+<!-- Búsqueda por nombre o descripción -->
 <div class="filtros">
     <input type="text" placeholder="Buscar por nombre o descripción..." [(ngModel)]="busqueda" (input)="filtrar()"
         class="input-busqueda" />
 </div>
 
+<!-- Spinner mientras carga -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando métodos de pago...</p>
 </div>
 
+<!-- Tabla de métodos de pago -->
 <div class="card" *ngIf="!cargando">
     <table class="tabla">
         <thead>
@@ -28,6 +32,7 @@
             <tr *ngFor="let m of metodosFiltrados">
                 <td><span class="id-badge">#{{ m.id }}</span></td>
                 <td>
+                    <!-- Badge con el nombre del método -->
                     <span class="metodo-badge">{{ m.nombre }}</span>
                 </td>
                 <td class="descripcion">{{ m.descripcion || '—' }}</td>
@@ -45,7 +50,7 @@
     </div>
 </div>
 
-<!-- MODAL FORM -->
+<!-- MODAL FORM: crear o editar método de pago -->
 <div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
     <div class="modal-global" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -71,7 +76,7 @@
     </div>
 </div>
 
-<!-- MODAL ELIMINAR -->
+<!-- MODAL ELIMINAR: confirmación antes de eliminar -->
 <div class="overlay-global" *ngIf="modalEliminar">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -79,6 +84,7 @@
         </div>
         <div class="modal-body-g">
             <p>¿Eliminar <strong>{{ metodoAEliminar?.nombre }}</strong>?</p>
+            <!-- Aviso si tiene ventas asociadas -->
             <p class="advertencia-g">⚠️ Si tiene ventas asociadas, no se podrá eliminar.</p>
         </div>
         <div class="modal-footer-g">

@@ -1,16 +1,20 @@
+<!-- Contenedor centrado de la pantalla de login -->
 <div class="login-container">
   <div class="login-card">
     <h2>Bienvenido</h2>
     <p class="subtitle">Inicia sesión para continuar</p>
 
+    <!-- Campo de usuario -->
     <div class="form-group">
       <input type="text" [(ngModel)]="username" placeholder="Usuario" />
     </div>
 
+    <!-- Campo de contraseña -->
     <div class="form-group">
       <input type="password" [(ngModel)]="password" placeholder="Contraseña" />
     </div>
 
+    <!-- Botón de ingreso -->
     <button (click)="login()">Ingresar</button>
   </div>
 </div>

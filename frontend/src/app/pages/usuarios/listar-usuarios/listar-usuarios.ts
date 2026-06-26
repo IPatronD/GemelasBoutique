@@ -15,20 +15,33 @@ import { RolService } from '../../../services/rol';
 })
 export class ListarUsuarios implements OnInit {
 
+  // Lista completa y lista filtrada de usuarios
   usuarios: any[] = [];
   usuariosFiltrados: any[] = [];
+
+  // Listas para los selects del formulario
   empleados: any[] = [];
   roles: any[] = [];
+
+  // Estado de carga
   cargando = true;
+
+  // Texto de búsqueda
   busqueda = '';
+
+  // Controla si se ven activos o inactivos
   verInactivos = false;
 
+  // Control de modales
   modalFormAbierto = false;
   modalEliminar = false;
   modoEdicion = false;
+
+  // Usuario que se está editando o eliminando
   usuarioSeleccionado: any = null;
   usuarioAEliminar: any = null;
 
+  // Datos del formulario
   form: any = {
     username: '',
     password: '',
@@ -49,11 +62,13 @@ export class ListarUsuarios implements OnInit {
     this.cargarTodo();
   }
 
+  // Carga roles y usuarios al iniciar
   cargarTodo() {
     this.rolService.listar().subscribe(data => this.roles = data);
     this.cargarUsuarios();
   }
 
+  // Trae todos los usuarios del backend
   cargarUsuarios() {
     this.usuarioService.listar().subscribe({
       next: (data) => {
@@ -69,6 +84,7 @@ export class ListarUsuarios implements OnInit {
     });
   }
 
+  // Filtra por username o nombre del empleado y por estado
   filtrar() {
     const q = this.busqueda.toLowerCase();
     this.usuariosFiltrados = this.usuarios.filter(u => {
@@ -79,29 +95,35 @@ export class ListarUsuarios implements OnInit {
     });
   }
 
+  // Cambia entre ver activos e inactivos
   cambiarVista(inactivos: boolean) {
     this.verInactivos = inactivos;
     this.filtrar();
     this.cdr.detectChanges();
   }
 
+  // Devuelve los nombres de roles como texto separado por comas
   getRoles(usuario: any): string {
     return usuario.roles?.map((r: any) => r.nombre).join(', ') || '-';
   }
 
+  // Verifica si un rol está seleccionado en el formulario
   rolSeleccionado(rol: any): boolean {
     return this.form.roles?.some((r: any) => r.id === rol.id);
   }
 
+  // Selecciona un rol — solo permite uno a la vez
   toggleRol(rol: any) {
     const idx = this.form.roles?.findIndex((r: any) => r.id === rol.id);
     if (idx === -1) {
-      this.form.roles = [rol]; // reemplaza, no agrega
+      this.form.roles = [rol];
     } else {
       this.form.roles = [];
     }
   }
 
+  // Abre el modal para crear un nuevo usuario
+  // Carga solo empleados sin usuario asignado
   abrirNuevo() {
     this.modoEdicion = false;
     this.form = { username: '', password: '', estado: true, empleado: null, roles: [] };
@@ -111,6 +133,7 @@ export class ListarUsuarios implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Abre el modal con los datos del usuario a editar
   abrirEditar(usuario: any) {
     this.modoEdicion = true;
     this.usuarioSeleccionado = usuario;
@@ -126,6 +149,7 @@ export class ListarUsuarios implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Cierra el modal del formulario
   cerrarForm() {
     this.modalFormAbierto = false;
     this.usuarioSeleccionado = null;
@@ -133,10 +157,9 @@ export class ListarUsuarios implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Guarda o actualiza según el modo
+  // Si es edición y no cambió la contraseña, no la envía
   guardar() {
-    console.log('form.empleado:', this.form.empleado);
-    console.log('empleado id:', this.form.empleado?.id);
-
     const payload: any = {
       username: this.form.username,
       password: this.form.password,
@@ -144,8 +167,6 @@ export class ListarUsuarios implements OnInit {
       empleado: { id: this.form.empleado?.id },
       roles: this.form.roles.map((r: any) => ({ id: r.id }))
     };
-
-    console.log('payload:', JSON.stringify(payload));
 
     if (this.modoEdicion) {
       if (!payload.password) delete payload.password;
@@ -161,6 +182,7 @@ export class ListarUsuarios implements OnInit {
     }
   }
 
+  // Desactiva un usuario sin eliminarlo
   desactivar(usuario: any) {
     const payload = { ...usuario, estado: false, roles: usuario.roles?.map((r: any) => ({ id: r.id })), empleado: { id: usuario.empleado?.id } };
     this.usuarioService.actualizar(usuario.id, payload).subscribe({
@@ -169,6 +191,7 @@ export class ListarUsuarios implements OnInit {
     });
   }
 
+  // Reactiva un usuario inactivo
   activar(usuario: any) {
     const payload = { ...usuario, estado: true, roles: usuario.roles?.map((r: any) => ({ id: r.id })), empleado: { id: usuario.empleado?.id } };
     this.usuarioService.actualizar(usuario.id, payload).subscribe({
@@ -177,6 +200,7 @@ export class ListarUsuarios implements OnInit {
     });
   }
 
+  // Abre el modal de confirmación para eliminar
   confirmarEliminar(usuario: any) {
     this.usuarioAEliminar = usuario;
     this.modalEliminar = true;
@@ -184,6 +208,7 @@ export class ListarUsuarios implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Elimina el usuario del backend y lo quita de la lista
   eliminar() {
     this.usuarioService.eliminar(this.usuarioAEliminar.id).subscribe({
       next: () => {
@@ -202,6 +227,7 @@ export class ListarUsuarios implements OnInit {
     });
   }
 
+  // Cancela la eliminación y cierra el modal
   cancelarEliminar() {
     this.modalEliminar = false;
     this.usuarioAEliminar = null;
@@ -209,9 +235,8 @@ export class ListarUsuarios implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Compara objetos por id para los selects del formulario
   compararObj(o1: any, o2: any): boolean {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
-
-  
 }

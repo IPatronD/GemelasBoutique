@@ -1,18 +1,19 @@
-<!-- CARGANDO -->
+<!-- Spinner mientras carga el resumen del backend -->
 <div class="cargando" *ngIf="cargando">
   <div class="spinner"></div>
   <p>Cargando dashboard...</p>
 </div>
 
+<!-- Contenido principal, visible solo cuando hay datos -->
 <div *ngIf="!cargando && resumen">
 
-  <!-- TÍTULO -->
+  <!-- Encabezado con el año actual -->
   <div class="dashboard-header">
     <h1>Dashboard</h1>
     <span class="fecha">{{ anioActual }}</span>
   </div>
 
-  <!-- TARJETAS MÉTRICAS -->
+  <!-- TARJETAS: métricas principales del negocio -->
   <div class="tarjetas">
 
     <div class="tarjeta">
@@ -39,6 +40,7 @@
       </div>
     </div>
 
+    <!-- Tarjeta de alerta: solo aparece si hay productos con stock bajo -->
     <div class="tarjeta alerta" *ngIf="resumen.productosStockBajo > 0">
       <div class="tarjeta-icono stock">⚠️</div>
       <div class="tarjeta-info">
@@ -49,15 +51,16 @@
 
   </div>
 
-  <!-- FILA 2: GRÁFICO + MÉTODOS DE PAGO -->
+  <!-- FILA 2: gráfico de barras + resumen de métodos de pago -->
   <div class="fila-dos">
 
-    <!-- VENTAS POR MES -->
+    <!-- Gráfico de barras verticales: ventas por mes del año actual -->
     <div class="card grafico">
       <h3>Ventas por Mes {{ anioActual }}</h3>
       <div class="barras">
         <div class="barra-item" *ngFor="let v of resumen.ventasPorMes">
           <div class="barra-contenedor">
+            <!-- La altura de cada barra se calcula con getBarraAncho() -->
             <div class="barra-fill" [style.height]="getBarraAncho(v.total)"></div>
           </div>
           <span class="barra-mes">{{ getNombreMes(v.mes) }}</span>
@@ -66,7 +69,7 @@
       </div>
     </div>
 
-    <!-- MÉTODOS DE PAGO -->
+    <!-- Resumen de ventas agrupadas por método de pago -->
     <div class="card metodos">
       <h3>Métodos de Pago</h3>
       <div class="metodo-item" *ngFor="let m of resumen.ventasPorMetodoPago">
@@ -76,17 +79,14 @@
         </div>
         <span class="metodo-total">S/ {{ m.total | number:'1.2-2' }}</span>
       </div>
-      <div class="sin-datos" *ngIf="!resumen.ventasPorMetodoPago?.length">
-        Sin datos
-      </div>
+      <div class="sin-datos" *ngIf="!resumen.ventasPorMetodoPago?.length">Sin datos</div>
     </div>
 
   </div>
 
-  <!-- FILA 3: ÚLTIMAS VENTAS + MÁS VENDIDOS -->
+  <!-- FILA 3: últimas 5 ventas + top 5 productos más vendidos -->
   <div class="fila-dos">
 
-    <!-- ÚLTIMAS VENTAS -->
     <div class="card">
       <h3>Últimas Ventas</h3>
       <table class="tabla">
@@ -107,12 +107,9 @@
           </tr>
         </tbody>
       </table>
-      <div class="sin-datos" *ngIf="!resumen.ultimasVentas?.length">
-        Sin ventas registradas
-      </div>
+      <div class="sin-datos" *ngIf="!resumen.ultimasVentas?.length">Sin ventas registradas</div>
     </div>
 
-    <!-- MÁS VENDIDOS -->
     <div class="card">
       <h3>Productos Más Vendidos</h3>
       <table class="tabla">
@@ -131,14 +128,12 @@
           </tr>
         </tbody>
       </table>
-      <div class="sin-datos" *ngIf="!resumen.masVendidos?.length">
-        Sin datos
-      </div>
+      <div class="sin-datos" *ngIf="!resumen.masVendidos?.length">Sin datos</div>
     </div>
 
   </div>
 
-  <!-- ALERTAS STOCK -->
+  <!-- ALERTAS DE STOCK: tabla visible solo si hay productos con stock bajo -->
   <div class="card" *ngIf="resumen.alertasStock?.length > 0">
     <h3>⚠️ Alertas de Stock Bajo</h3>
     <table class="tabla">
@@ -161,7 +156,7 @@
 
 </div>
 
-<!-- SIN DATOS -->
+<!-- Error: si el backend no respondió correctamente -->
 <div class="sin-conexion" *ngIf="!cargando && !resumen">
   <p>⚠️ No se pudo cargar el dashboard</p>
 </div>

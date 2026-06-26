@@ -1,11 +1,13 @@
 <div class="page-header">
     <h1>Productos</h1>
     <span class="badge">{{ productosFiltrados.length }} registros</span>
+    <!-- Solo admin puede crear productos -->
     <button class="btn-nuevo" (click)="abrirNuevo()" *ngIf="esAdmin">
         + Nuevo Producto
     </button>
 </div>
 
+<!-- Filtros: búsqueda por nombre y por categoría -->
 <div class="filtros">
     <input type="text" placeholder="Buscar por nombre..." [(ngModel)]="busqueda" (input)="filtrar()"
         class="input-busqueda" />
@@ -15,11 +17,13 @@
     </select>
 </div>
 
+<!-- Spinner mientras carga -->
 <div class="cargando" *ngIf="cargando">
     <div class="spinner"></div>
     <p>Cargando productos...</p>
 </div>
 
+<!-- Tabla de productos -->
 <div class="card" *ngIf="!cargando">
     <table class="tabla">
         <thead>
@@ -42,6 +46,7 @@
                     <span class="categoria-badge">{{ p.categoria?.nombre || '-' }}</span>
                 </td>
                 <td>S/ {{ p.precio | number:'1.2-2' }}</td>
+                <!-- Badge de stock con color según nivel -->
                 <td>
                     <span class="stock-badge" [ngClass]="getStockClass(p.stock)">
                         {{ p.stock }}
@@ -49,8 +54,10 @@
                 </td>
                 <td>
                     <div class="acciones">
-                        <button class="btn-editar" (click)="abrirEditar(p)" *ngIf="esAdmin">✏️ Editar</button>
-                        <span class="sin-accion" *ngIf="!esAdmin">Solo lectura</span>
+                        <!-- Admin y supervisora pueden editar -->
+                        <button class="btn-editar" (click)="abrirEditar(p)" *ngIf="esAdmin || esSupervisora">✏️
+                            Editar</button>
+                        <!-- Solo admin puede eliminar -->
                         <button class="btn-eliminar" (click)="confirmarEliminar(p)" *ngIf="esAdmin">
                             🗑 Eliminar
                         </button>
@@ -64,7 +71,7 @@
     </div>
 </div>
 
-<!-- MODAL FORM -->
+<!-- MODAL FORM: crear o editar producto -->
 <div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
     <div class="modal-global" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -107,7 +114,7 @@
     </div>
 </div>
 
-<!-- MODAL ELIMINAR -->
+<!-- MODAL ELIMINAR: solo visible para admin -->
 <div class="overlay-global" *ngIf="modalEliminar && esAdmin">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">

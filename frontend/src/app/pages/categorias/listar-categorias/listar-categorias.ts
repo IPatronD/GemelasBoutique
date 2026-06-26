@@ -9,38 +9,42 @@ import { CategoriaService } from '../../../services/categoria';
   imports: [CommonModule, FormsModule],
   templateUrl: './listar-categorias.html',
   styleUrl: './listar-categorias.scss',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None // Permite que los estilos globales (modales) funcionen
 })
 export class ListarCategorias implements OnInit {
 
-  categorias: any[] = [];
-  categoriasFiltradas: any[] = [];
-  cargando = true;
-  busqueda = '';
+  categorias: any[] = [];          // Lista completa de categorías del backend
+  categoriasFiltradas: any[] = []; // Lista filtrada por búsqueda
+  cargando = true;                 // Controla el spinner
+  busqueda = '';                   // Texto del buscador
 
+  // Control de modales
   modalFormAbierto = false;
   modalEliminar = false;
-  modoEdicion = false;
-  categoriaSeleccionada: any = null;
-  categoriaAEliminar: any = null;
+  modoEdicion = false;             // true = editar, false = crear
+  categoriaSeleccionada: any = null;  // Categoría en edición
+  categoriaAEliminar: any = null;     // Categoría pendiente de eliminar
 
+  // Campos del formulario
   form: any = { nombre: '', descripcion: '' };
 
   constructor(
-    private categoriaService: CategoriaService,
-    private cdr: ChangeDetectorRef,
-    @Inject(DOCUMENT) private document: Document
+    private categoriaService: CategoriaService, // Llama al backend
+    private cdr: ChangeDetectorRef,             // Fuerza actualización de vista
+    @Inject(DOCUMENT) private document: Document // Para manejar el body (modales)
   ) { }
 
+  // Se ejecuta al abrir la pantalla
   ngOnInit() {
     this.cargarCategorias();
   }
 
   cargarCategorias() {
+    // GET /api/categorias
     this.categoriaService.listar().subscribe({
       next: (data) => {
         this.categorias = data;
-        this.filtrar();
+        this.filtrar(); // Aplica filtro inicial
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -53,20 +57,23 @@ export class ListarCategorias implements OnInit {
 
   filtrar() {
     const q = this.busqueda.toLowerCase();
+    // Filtra por nombre o descripción
     this.categoriasFiltradas = this.categorias.filter(c =>
       c.nombre?.toLowerCase().includes(q) ||
       c.descripcion?.toLowerCase().includes(q)
     );
   }
 
+  // Abre el modal en modo CREAR
   abrirNuevo() {
     this.modoEdicion = false;
-    this.form = { nombre: '', descripcion: '' };
+    this.form = { nombre: '', descripcion: '' }; // Limpia el form
     this.modalFormAbierto = true;
     this.document.body.classList.add('modal-open');
     this.cdr.detectChanges();
   }
 
+  // Abre el modal en modo EDITAR con los datos de la categoría
   abrirEditar(categoria: any) {
     this.modoEdicion = true;
     this.categoriaSeleccionada = categoria;
@@ -85,8 +92,10 @@ export class ListarCategorias implements OnInit {
 
   guardar() {
     if (this.modoEdicion) {
+      // PUT /api/categorias/{id}
       this.categoriaService.actualizar(this.categoriaSeleccionada.id, this.form).subscribe({
         next: (data) => {
+          // Actualiza solo el elemento modificado en la lista local
           const idx = this.categorias.findIndex(c => c.id === data.id);
           if (idx !== -1) this.categorias[idx] = data;
           this.filtrar();
@@ -95,9 +104,10 @@ export class ListarCategorias implements OnInit {
         error: (err) => console.error(err)
       });
     } else {
+      // POST /api/categorias
       this.categoriaService.guardar(this.form).subscribe({
         next: (data) => {
-          this.categorias.push(data);
+          this.categorias.push(data); // Agrega la nueva al final de la lista
           this.filtrar();
           this.cerrarForm();
         },
@@ -106,6 +116,7 @@ export class ListarCategorias implements OnInit {
     }
   }
 
+  // Abre el modal de confirmación para eliminar
   confirmarEliminar(categoria: any) {
     this.categoriaAEliminar = categoria;
     this.modalEliminar = true;
@@ -114,8 +125,10 @@ export class ListarCategorias implements OnInit {
   }
 
   eliminar() {
+    // DELETE /api/categorias/{id}
     this.categoriaService.eliminar(this.categoriaAEliminar.id).subscribe({
       next: () => {
+        // Elimina de la lista local sin recargar todo
         this.categorias = this.categorias.filter(c => c.id !== this.categoriaAEliminar.id);
         this.filtrar();
         this.modalEliminar = false;
@@ -124,6 +137,7 @@ export class ListarCategorias implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
+        // Si falla (ej: tiene productos asociados), solo cierra el modal
         this.modalEliminar = false;
         this.document.body.classList.remove('modal-open');
         this.cdr.detectChanges();

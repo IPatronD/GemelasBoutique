@@ -1,5 +1,6 @@
 <div class="perfil-page">
 
+    <!-- Spinner mientras carga el perfil -->
     <div class="cargando" *ngIf="cargando">
         <div class="spinner"></div>
         <p>Cargando perfil...</p>
@@ -13,7 +14,7 @@
 
         <div class="perfil-grid">
 
-            <!-- TARJETA PRINCIPAL -->
+            <!-- Tarjeta principal con avatar e iniciales -->
             <div class="card perfil-card">
                 <div class="avatar">
                     <span>{{ perfil.empleado?.nombres?.charAt(0) }}{{ perfil.empleado?.apellidos?.charAt(0) }}</span>
@@ -24,7 +25,7 @@
                 </div>
             </div>
 
-            <!-- DATOS PERSONALES -->
+            <!-- Datos personales con botón de editar -->
             <div class="card">
                 <div class="seccion-header">
                     <h3 class="seccion-titulo">Datos Personales</h3>
@@ -36,6 +37,7 @@
                 </div>
                 <div class="dato-fila">
                     <span class="dato-label">DNI</span>
+                    <!-- DNI no editable -->
                     <span class="dato-valor">{{ perfil.empleado?.dni }}</span>
                 </div>
                 <div class="dato-fila">
@@ -48,7 +50,7 @@
                 </div>
             </div>
 
-            <!-- SEGURIDAD -->
+            <!-- Sección de seguridad para cambiar contraseña -->
             <div class="card">
                 <h3 class="seccion-titulo">Seguridad</h3>
                 <p class="seguridad-texto">Cambia tu contraseña periódicamente para mantener tu cuenta segura.</p>
@@ -69,6 +71,7 @@
             <button class="btn-cerrar-g" (click)="cerrarPassword()">✕</button>
         </div>
         <div class="modal-body-g">
+            <!-- Mensaje de éxito -->
             <div class="exito-msg" *ngIf="exitoPassword">✅ Contraseña actualizada correctamente.</div>
             <ng-container *ngIf="!exitoPassword">
                 <div class="form-group">
@@ -79,6 +82,7 @@
                     <label>Confirmar Contraseña</label>
                     <input type="password" [(ngModel)]="formPassword.confirmar" placeholder="Repite la contraseña" />
                 </div>
+                <!-- Mensaje de error de validación -->
                 <div class="error-msg" *ngIf="errorPassword">{{ errorPassword }}</div>
             </ng-container>
         </div>
@@ -100,6 +104,7 @@
             <button class="btn-cerrar-g" (click)="cerrarEditar()">✕</button>
         </div>
         <div class="modal-body-g">
+            <!-- Mensaje de éxito -->
             <div class="exito-msg" *ngIf="exitoEditar">✅ Perfil actualizado correctamente.</div>
             <ng-container *ngIf="!exitoEditar">
                 <div class="form-group">
@@ -120,6 +125,7 @@
                     <label>Correo</label>
                     <input type="email" [(ngModel)]="formEditar.correo" placeholder="correo@ejemplo.com" />
                 </div>
+                <!-- Mensaje de error -->
                 <div class="error-msg" *ngIf="errorEditar">{{ errorEditar }}</div>
             </ng-container>
         </div>

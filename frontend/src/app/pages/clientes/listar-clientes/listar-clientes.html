@@ -1,14 +1,17 @@
+<!-- Encabezado: el botón "Nuevo" solo aparece para admin y vendedora -->
 <div class="page-header">
     <h1>Clientes</h1>
     <span class="badge">{{ clientesFiltrados.length }} registros</span>
     <button class="btn-nuevo" (click)="abrirNuevo()" *ngIf="esAdmin || esVendedora">+ Nuevo Cliente</button>
 </div>
 
+<!-- Buscador en tiempo real -->
 <div class="filtros">
     <input type="text" placeholder="Buscar por nombre, documento o correo..." [(ngModel)]="busqueda" (input)="filtrar()"
         class="input-busqueda" />
 </div>
 
+<!-- Toggle para cambiar entre clientes activos e inactivos -->
 <div class="toggle-estado">
     <button [class.activo]="!verInactivos" (click)="cambiarVista(false)">Activos</button>
     <button [class.activo]="verInactivos" (click)="cambiarVista(true)">Inactivos</button>
@@ -34,6 +37,7 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Muestra solo activos o inactivos según el toggle -->
             <tr *ngFor="let c of clientesMostrados()">
                 <td><span class="id-badge">#{{ c.id }}</span></td>
                 <td><strong>{{ c.nombres }}</strong></td>
@@ -48,19 +52,16 @@
                 </td>
                 <td>
                     <div class="acciones">
+                        <!-- Cliente activo: admin puede editar y desactivar, vendedora solo ve "Solo lectura" -->
                         <ng-container *ngIf="c.estado">
-                            <button class="btn-editar" (click)="abrirEditar(c)" *ngIf="esAdmin">
-                                ✏️ Editar
-                            </button>
-                            <button class="btn-eliminar" (click)="confirmarEliminar(c)" *ngIf="esAdmin">
-                                🚫 Desactivar
-                            </button>
+                            <button class="btn-editar" (click)="abrirEditar(c)" *ngIf="esAdmin">✏️ Editar</button>
+                            <button class="btn-eliminar" (click)="confirmarEliminar(c)" *ngIf="esAdmin">🚫
+                                Desactivar</button>
                             <span class="sin-accion" *ngIf="!esAdmin">Solo lectura</span>
                         </ng-container>
+                        <!-- Cliente inactivo: admin puede activarlo -->
                         <ng-container *ngIf="!c.estado">
-                            <button class="btn-activar" (click)="activar(c)" *ngIf="esAdmin">
-                                ✅ Activar
-                            </button>
+                            <button class="btn-activar" (click)="activar(c)" *ngIf="esAdmin">✅ Activar</button>
                             <span class="sin-accion" *ngIf="!esAdmin">Inactivo</span>
                         </ng-container>
                     </div>
@@ -73,7 +74,7 @@
     </div>
 </div>
 
-<!-- MODAL FORM -->
+<!-- MODAL CREAR/EDITAR -->
 <div class="overlay-global" *ngIf="modalFormAbierto" (click)="cerrarForm()">
     <div class="modal-global" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
@@ -95,11 +96,13 @@
             </div>
             <div class="form-group">
                 <label>Documento</label>
+                <!-- En modo edición el documento es solo lectura -->
                 <input type="text" [(ngModel)]="form.documento" placeholder="DNI o RUC" [readonly]="modoEdicion"
                     [class.readonly]="modoEdicion" />
             </div>
             <div class="form-group">
                 <label>Teléfono</label>
+                <!-- Solo acepta números, máximo 9 dígitos -->
                 <input type="text" [(ngModel)]="form.telefono" placeholder="9 dígitos" maxlength="9"
                     (keypress)="soloNumeros($event)" />
             </div>
@@ -117,7 +120,7 @@
     </div>
 </div>
 
-<!-- MODAL DESACTIVAR -->
+<!-- MODAL CONFIRMAR DESACTIVAR -->
 <div class="overlay-global" *ngIf="modalEliminar">
     <div class="modal-global" style="width:380px" (click)="$event.stopPropagation()">
         <div class="modal-header-g">
