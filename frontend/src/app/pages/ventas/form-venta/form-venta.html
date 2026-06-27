@@ -57,7 +57,7 @@
 
             <!-- Lista de items en el carrito -->
             <div class="carrito-items" *ngIf="carrito.length > 0">
-                <div class="item-carrito" *ngFor="let item de carrito">
+                <div class="item-carrito" *ngFor="let item of carrito">
                     <div class="item-info">
                         <span class="item-nombre">{{ item.nombre }}</span>
                         <span class="item-precio">S/ {{ item.precio | number:'1.2-2' }} c/u</span>

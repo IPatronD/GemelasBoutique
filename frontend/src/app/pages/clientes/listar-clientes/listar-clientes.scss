@@ -263,3 +263,22 @@ $gris: #6c757d;
     color: $gris;
     font-style: italic;
 }
+
+.error-msg {
+    color: #e74c3c !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+    display: block !important;
+}
+
+.requerido {
+    color: #e74c3c;
+    margin-left: 2px;
+}
+
+.doc-hint {
+    color: #8b5e3c;
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 6px;
+}

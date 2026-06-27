@@ -106,12 +106,70 @@ export class ListarClientes implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Objeto que almacena los mensajes de error del formulario
+  errores: any = {};
+
+  // Se ejecuta cuando cambia el tipo (Natural/Jurídico)
+  // Limpia el documento para evitar longitudes incorrectas
+  onTipoChange() {
+    this.form.documento = '';
+    this.errores.documento = '';
+  }
+
+  // Valida todos los campos del formulario
+  // Retorna true si es válido, false si hay errores
+  validarFormulario(): boolean {
+    this.errores = {};
+    let valido = true;
+
+    // Tipo obligatorio
+    if (!this.form.tipo) {
+      this.errores.tipo = 'Selecciona un tipo de cliente.';
+      valido = false;
+    }
+
+    // Nombres obligatorio y mínimo 3 caracteres
+    if (!this.form.nombres || this.form.nombres.trim().length < 3) {
+      this.errores.nombres = 'El nombre debe tener al menos 3 caracteres.';
+      valido = false;
+    }
+
+    // Documento según tipo
+    if (!this.form.documento) {
+      this.errores.documento = 'El documento es obligatorio.';
+      valido = false;
+    } else if (this.form.tipo === 'Natural' && this.form.documento.length !== 8) {
+      this.errores.documento = 'El DNI debe tener exactamente 8 dígitos.';
+      valido = false;
+    } else if (this.form.tipo === 'Jurídico' && this.form.documento.length !== 11) {
+      this.errores.documento = 'El RUC debe tener exactamente 11 dígitos.';
+      valido = false;
+    }
+
+    // Teléfono obligatorio y exactamente 9 dígitos
+    if (!this.form.telefono || this.form.telefono.length !== 9) {
+      this.errores.telefono = 'El teléfono debe tener exactamente 9 dígitos.';
+      valido = false;
+    }
+
+    // Correo opcional pero si se ingresa debe tener formato válido
+    if (this.form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.correo)) {
+      this.errores.correo = 'Ingresa un correo válido (ej: nombre@dominio.com).';
+      valido = false;
+    }
+
+    return valido;
+  }
+
   guardar() {
+    // Validar antes de enviar
+    if (!this.validarFormulario()) return;
+
     if (this.modoEdicion) {
-      // PUT /api/clientes/{id}
+
       this.clienteService.actualizar(this.clienteSeleccionado.id, this.form).subscribe({
         next: (data) => {
-          // Reemplaza solo el cliente modificado en la lista local
+
           const idx = this.clientes.findIndex(c => c.id === data.id);
           if (idx !== -1) this.clientes[idx] = data;
           this.filtrar();
@@ -119,11 +177,11 @@ export class ListarClientes implements OnInit {
         },
         error: (err) => console.error(err)
       });
-    } else {
-      // POST /api/clientes
+    }
+    else {
       this.clienteService.guardar(this.form).subscribe({
         next: (data) => {
-          this.clientes.unshift(data); // Agrega al inicio de la lista
+          this.clientes.unshift(data);
           this.filtrar();
           this.cerrarForm();
         },

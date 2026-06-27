@@ -82,34 +82,55 @@
             <button class="btn-cerrar-g" (click)="cerrarForm()">✕</button>
         </div>
         <div class="modal-body-g">
+
+            <!-- TIPO -->
             <div class="form-group">
-                <label>Tipo</label>
-                <select [(ngModel)]="form.tipo">
+                <label>Tipo <span class="requerido">*</span></label>
+                <select [(ngModel)]="form.tipo" (change)="onTipoChange()">
                     <option value="">Seleccionar...</option>
                     <option value="Natural">Natural</option>
                     <option value="Jurídico">Jurídico</option>
                 </select>
+                <span class="error-msg" *ngIf="errores.tipo">{{ errores.tipo }}</span>
             </div>
+
+            <!-- NOMBRES -->
             <div class="form-group">
-                <label>Nombres</label>
+                <label>Nombres <span class="requerido">*</span></label>
                 <input type="text" [(ngModel)]="form.nombres" placeholder="Nombre completo" />
+                <span class="error-msg" *ngIf="errores.nombres">{{ errores.nombres }}</span>
             </div>
+
+            <!-- DOCUMENTO -->
             <div class="form-group">
-                <label>Documento</label>
-                <!-- En modo edición el documento es solo lectura -->
-                <input type="text" [(ngModel)]="form.documento" placeholder="DNI o RUC" [readonly]="modoEdicion"
-                    [class.readonly]="modoEdicion" />
+                <label>
+                    Documento <span class="requerido">*</span>
+                    <!-- Indicador del tipo de documento según el tipo seleccionado -->
+                    <span class="doc-hint" *ngIf="form.tipo === 'Natural'">(DNI — 8 dígitos)</span>
+                    <span class="doc-hint" *ngIf="form.tipo === 'Jurídico'">(RUC — 11 dígitos)</span>
+                </label>
+                <input type="text" [(ngModel)]="form.documento"
+                    [placeholder]="form.tipo === 'Jurídico' ? '11 dígitos (RUC)' : '8 dígitos (DNI)'"
+                    [maxlength]="form.tipo === 'Jurídico' ? 11 : 8" [readonly]="modoEdicion"
+                    [class.readonly]="modoEdicion" (keypress)="soloNumeros($event)" />
+                <span class="error-msg" *ngIf="errores.documento">{{ errores.documento }}</span>
             </div>
+
+            <!-- TELÉFONO -->
             <div class="form-group">
-                <label>Teléfono</label>
-                <!-- Solo acepta números, máximo 9 dígitos -->
+                <label>Teléfono <span class="requerido">*</span></label>
                 <input type="text" [(ngModel)]="form.telefono" placeholder="9 dígitos" maxlength="9"
                     (keypress)="soloNumeros($event)" />
+                <span class="error-msg" *ngIf="errores.telefono">{{ errores.telefono }}</span>
             </div>
+
+            <!-- CORREO -->
             <div class="form-group">
                 <label>Correo</label>
                 <input type="email" [(ngModel)]="form.correo" placeholder="correo@ejemplo.com" />
+                <span class="error-msg" *ngIf="errores.correo">{{ errores.correo }}</span>
             </div>
+
         </div>
         <div class="modal-footer-g">
             <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
