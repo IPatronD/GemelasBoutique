@@ -377,3 +377,31 @@ Estado del desarrollo:
 - Sistema completamente navegable.
 
 ---
+# Requisitos previos
+
+Antes de ejecutar el proyecto asegúrese de tener instalado:
+
+- Java JDK 21
+- Apache Maven 3.9 o superior
+- Node.js 20 o superior
+- Angular CLI 21
+- MySQL Server 8.0 o superior
+- Git
+
+También es necesario contar con una base de datos MySQL llamada:
+GemelasBoutique
+
+---
+# Orden de ejecución del proyecto
+
+Para ejecutar correctamente el sistema se recomienda seguir el siguiente orden:
+
+1. Iniciar el servicio de MySQL.
+2. Crear o restaurar la base de datos GemelasBoutique.
+3. Ejecutar el backend desarrollado con Spring Boot.
+4. Ejecutar el frontend desarrollado con Angular.
+5. Acceder desde el navegador a:
+
+http://localhost:4200
+
+
