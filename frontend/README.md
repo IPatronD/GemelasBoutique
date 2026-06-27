@@ -51,7 +51,7 @@ Cada módulo cumple una responsabilidad específica, facilitando el mantenimient
 | Bootstrap Icons | Iconografía |
 | Angular Router | Navegación |
 | HttpClient | Consumo de API REST |
-| Reactive Forms | Formularios |
+| Template Driven Forms | Formularios |
 | JWT | Autenticación |
 | RxJS | Programación reactiva |
 
