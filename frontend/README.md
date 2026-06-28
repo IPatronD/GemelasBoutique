@@ -535,7 +535,6 @@ Durante el desarrollo del frontend se aplicaron los principales contenidos del c
 - Formularios Reactivos.
 - Validaciones.
 - SCSS.
-- Bootstrap.
 - Arquitectura basada en componentes.
 
 ---
