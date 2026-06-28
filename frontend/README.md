@@ -47,8 +47,6 @@ Cada módulo cumple una responsabilidad específica, facilitando el mantenimient
 | Angular 21 | Framework principal |
 | TypeScript | Lenguaje de programación |
 | SCSS | Estilos |
-| Bootstrap 5 | Diseño responsivo |
-| Bootstrap Icons | Iconografía |
 | Angular Router | Navegación |
 | HttpClient | Consumo de API REST |
 | Template Driven Forms | Formularios |
