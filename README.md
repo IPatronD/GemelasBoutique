@@ -217,7 +217,6 @@ Se implementó:
 - HttpClient
 - Reactive Forms
 - SCSS
-- Bootstrap
 - Componentes reutilizables
 
 Además, cada rol posee su propio dashboard y navegación independiente.
