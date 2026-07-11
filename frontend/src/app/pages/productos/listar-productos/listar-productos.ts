@@ -32,6 +32,7 @@ export class ListarProductos implements OnInit {
   // Permisos según el rol del usuario
   esAdmin = false;
   esSupervisora = false;
+  esVendedora = false;
 
   // Control de modales
   modalFormAbierto = false;
@@ -63,6 +64,7 @@ export class ListarProductos implements OnInit {
     // Detecta el rol para mostrar u ocultar botones
     this.esAdmin = this.auth.esAdmin();
     this.esSupervisora = this.auth.esSupervisora();
+    this.esVendedora = this.auth.esVendedora();
     this.cargarCategorias();
     this.cargarProductos();
   }
