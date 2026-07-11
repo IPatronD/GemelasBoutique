@@ -96,8 +96,6 @@ El sistema sigue una arquitectura cliente-servidor compuesta por tres capas prin
 | Angular 21 | Desarrollo del frontend |
 | TypeScript | Lenguaje principal del frontend |
 | SCSS | Estilos del proyecto |
-| Bootstrap 5 | Componentes visuales |
-| Bootstrap Icons | Iconografía |
 | Git | Control de versiones |
 | GitHub | Repositorio del proyecto |
 
@@ -219,7 +217,6 @@ Se implementó:
 - HttpClient
 - Reactive Forms
 - SCSS
-- Bootstrap
 - Componentes reutilizables
 
 Además, cada rol posee su propio dashboard y navegación independiente.

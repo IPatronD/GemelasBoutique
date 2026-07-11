@@ -47,11 +47,9 @@ Cada módulo cumple una responsabilidad específica, facilitando el mantenimient
 | Angular 21 | Framework principal |
 | TypeScript | Lenguaje de programación |
 | SCSS | Estilos |
-| Bootstrap 5 | Diseño responsivo |
-| Bootstrap Icons | Iconografía |
 | Angular Router | Navegación |
 | HttpClient | Consumo de API REST |
-| Reactive Forms | Formularios |
+| Template Driven Forms | Formularios |
 | JWT | Autenticación |
 | RxJS | Programación reactiva |
 
@@ -414,18 +412,18 @@ Los formularios incorporan validaciones para evitar el ingreso de información i
 
 # Diseño de la interfaz
 
-La aplicación utiliza una interfaz basada en Bootstrap.
+La interfaz del sistema fue desarrollada utilizando Angular, HTML y SCSS, buscando ofrecer una experiencia de usuario sencilla, organizada e intuitiva. Se implementó una estructura uniforme en todas las páginas para facilitar la navegación entre los diferentes módulos del sistema.
 
 Características principales:
 
-- Diseño responsivo.
-- Sidebar lateral.
-- Dashboard con indicadores.
-- Tablas dinámicas.
-- Formularios.
-- Botones reutilizables.
-- Tarjetas informativas.
-- Iconografía mediante Bootstrap Icons.
+- Diseño responsivo para diferentes tamaños de pantalla.
+- Menú lateral de navegación para acceder a los módulos del sistema.
+- Dashboard con indicadores e información resumida.
+- Tablas para la visualización y administración de registros.
+- Formularios para el registro y edición de información.
+- Botones de acción con estilos consistentes en toda la aplicación.
+- Tarjetas informativas para presentar datos relevantes.
+- Interfaz con una identidad visual uniforme basada en colores y estilos personalizados mediante SCSS.
 
 ---
 
@@ -537,7 +535,6 @@ Durante el desarrollo del frontend se aplicaron los principales contenidos del c
 - Formularios Reactivos.
 - Validaciones.
 - SCSS.
-- Bootstrap.
 - Arquitectura basada en componentes.
 
 ---
