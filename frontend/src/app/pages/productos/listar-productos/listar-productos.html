@@ -55,7 +55,8 @@
                 <td>
                     <div class="acciones">
                         <!-- Admin y supervisora pueden editar -->
-                        <button class="btn-editar" (click)="abrirEditar(p)" *ngIf="esAdmin || esSupervisora || esVendedora">✏️
+                        <button class="btn-editar" (click)="abrirEditar(p)"
+                            *ngIf="esAdmin || esSupervisora || esVendedora">✏️
                             Editar</button>
                         <!-- Solo admin puede eliminar -->
                         <button class="btn-eliminar" (click)="confirmarEliminar(p)" *ngIf="esAdmin ">
@@ -109,7 +110,7 @@
             <button class="btn-cancelar-g" (click)="cerrarForm()">Cancelar</button>
             <button class="btn-guardar-g" (click)="guardar()">
                 {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
-            </button>   
+            </button>
         </div>
     </div>
 </div>
