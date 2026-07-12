@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../enviroments/enviroment';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
 export class Auth {
 
   // URL base del backend para autenticación
-  private api = 'http://localhost:8080/api/auth';
+  private api = `${environment.apiUrl}/api/auth`;
 
   constructor(private http: HttpClient, private router: Router) { }
 

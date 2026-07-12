@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../enviroments/enviroment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,8 @@ import { Observable } from 'rxjs';
 export class MetodoPagoService {
 
   // URL base del backend para métodos de pago
-  private api = 'http://localhost:8080/api/metodos-pago';
+  private api = `${environment.apiUrl}/api/metodos-pago`;
+
 
   constructor(private http: HttpClient) { }
 
