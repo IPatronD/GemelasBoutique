@@ -1,3 +1,13 @@
+$beige: #f5f0e6;
+$crema: #fffaf3;
+$marron: #8b5e3c;
+$marron-oscuro: #5c3a21;
+$gris: #6c757d;
+
+// Breakpoints
+$tablet: 768px;
+$movil: 480px;
+
 body.modal-open {
     overflow: hidden;
 }
@@ -13,6 +23,13 @@ body.modal-open {
     align-items: center !important;
     justify-content: center !important;
     z-index: 99999 !important;
+
+    // En móvil se agrega padding lateral para que el modal nunca toque el borde
+    // de la pantalla, incluso cuando pase a ocupar casi todo el ancho.
+    @media (max-width: $movil) {
+        padding: 16px !important;
+        box-sizing: border-box !important;
+    }
 }
 
 .modal-global {
@@ -25,6 +42,19 @@ body.modal-open {
     box-shadow: 0 20px 60px rgba(92, 58, 33, 0.25) !important;
     position: relative !important;
     z-index: 100000 !important;
+
+    // El ancho fijo de 480px se rompe en pantallas más angostas que eso: pasa a
+    // ocupar el ancho disponible respetando el padding del overlay.
+    @media (max-width: $tablet) {
+        width: 90vw !important;
+    }
+
+    @media (max-width: $movil) {
+        width: 100% !important;
+        max-height: 90vh !important;
+        border-radius: 12px !important;
+        border-width: 1.5px !important;
+    }
 }
 
 .modal-header-g {
@@ -56,10 +86,20 @@ body.modal-open {
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
+        flex-shrink: 0 !important;
 
         &:hover {
             background: #f5f0e6 !important;
             color: #5c3a21 !important;
+        }
+    }
+
+    @media (max-width: $movil) {
+        padding: 16px 18px !important;
+        border-radius: 12px 12px 0 0 !important;
+
+        h3 {
+            font-size: 15px !important;
         }
     }
 }
@@ -92,6 +132,15 @@ body.modal-open {
         border-top: 2px solid #e0d5c5 !important;
         margin: 16px 0 !important;
     }
+
+    @media (max-width: $movil) {
+        padding: 18px !important;
+        max-height: calc(90vh - 116px) !important; // ajustado al header/footer más chicos de móvil
+
+        p {
+            font-size: 13px;
+        }
+    }
 }
 
 .detalle-fila-g {
@@ -102,6 +151,7 @@ body.modal-open {
     font-size: 14px !important;
     color: #5c3a21 !important;
     border-bottom: 1px solid #f0e8d8 !important;
+    gap: 8px !important;
 
     &:last-child {
         border-bottom: none !important;
@@ -157,6 +207,25 @@ body.modal-open {
 
         &:hover {
             background: #c0392b !important;
+        }
+    }
+
+    // En móvil los botones se apilan a ancho completo: son más fáciles de tocar
+    // y evitan que dos botones lado a lado queden demasiado angostos.
+    @media (max-width: $movil) {
+        flex-direction: column !important;
+        padding: 14px 18px !important;
+        border-radius: 0 0 12px 12px !important;
+
+        button {
+            width: 100% !important;
+            padding: 11px 20px !important;
+        }
+
+        // El botón de confirmar va primero visualmente (arriba) porque es la
+        // acción más probable; se invierte el orden con flex.
+        .btn-confirmar-g {
+            order: -1 !important;
         }
     }
 }

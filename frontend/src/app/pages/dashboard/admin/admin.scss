@@ -4,6 +4,10 @@ $marron: #8b5e3c;
 $marron-oscuro: #5c3a21;
 $gris: #6c757d;
 
+// Breakpoints
+$tablet: 768px;
+$movil: 480px;
+
 // CARGANDO
 .cargando {
     display: flex;
@@ -22,6 +26,15 @@ $gris: #6c757d;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
     }
+
+    @media (max-width: $movil) {
+        height: 220px;
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+        }
+    }
 }
 
 @keyframes spin {
@@ -36,6 +49,8 @@ $gris: #6c757d;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 24px;
+    gap: 12px;
+    flex-wrap: wrap;
 
     h1 {
         font-size: 24px;
@@ -49,6 +64,27 @@ $gris: #6c757d;
         background: white;
         padding: 6px 14px;
         border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    @media (max-width: $tablet) {
+        h1 {
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: $movil) {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+
+        h1 {
+            font-size: 18px;
+        }
+
+        .fecha {
+            align-self: center;
+        }
     }
 }
 
@@ -58,6 +94,16 @@ $gris: #6c757d;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
+
+    @media (max-width: $tablet) {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    @media (max-width: $movil) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 }
 
 .tarjeta {
@@ -86,6 +132,7 @@ $gris: #6c757d;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
 
         &.ventas-hoy {
             background: #fff3e0;
@@ -107,6 +154,7 @@ $gris: #6c757d;
     .tarjeta-info {
         display: flex;
         flex-direction: column;
+        min-width: 0;
 
         .tarjeta-valor {
             font-size: 20px;
@@ -118,6 +166,27 @@ $gris: #6c757d;
             font-size: 12px;
             color: $gris;
             margin-top: 2px;
+        }
+    }
+
+    @media (max-width: $movil) {
+        padding: 14px;
+        gap: 10px;
+
+        .tarjeta-icono {
+            font-size: 22px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .tarjeta-info {
+            .tarjeta-valor {
+                font-size: 16px;
+            }
+
+            .tarjeta-label {
+                font-size: 11px;
+            }
         }
     }
 }
@@ -135,6 +204,11 @@ $gris: #6c757d;
         color: $marron-oscuro;
         margin-bottom: 16px;
     }
+
+    @media (max-width: $movil) {
+        padding: 14px;
+        border-radius: 10px;
+    }
 }
 
 // FILA DOS
@@ -143,6 +217,11 @@ $gris: #6c757d;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 24px;
+
+    @media (max-width: $tablet) {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 // GRÁFICO BARRAS
@@ -193,6 +272,17 @@ $gris: #6c757d;
         color: $marron;
         font-weight: 600;
     }
+
+    @media (max-width: $movil) {
+        .barras {
+            height: 130px;
+            gap: 6px;
+        }
+
+        .barra-contenedor {
+            height: 95px;
+        }
+    }
 }
 
 // MÉTODOS DE PAGO
@@ -202,6 +292,7 @@ $gris: #6c757d;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid $beige;
+    gap: 8px;
 
     &:last-child {
         border-bottom: none;
@@ -210,6 +301,7 @@ $gris: #6c757d;
     .metodo-info {
         display: flex;
         flex-direction: column;
+        min-width: 0;
 
         .metodo-nombre {
             font-weight: 600;
@@ -226,10 +318,17 @@ $gris: #6c757d;
     .metodo-total {
         font-weight: 700;
         color: $marron;
+        white-space: nowrap;
     }
 }
 
 // TABLA
+.tabla-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .tabla {
     width: 100%;
     border-collapse: collapse;
@@ -242,6 +341,7 @@ $gris: #6c757d;
         font-weight: 600;
         border-bottom: 2px solid $beige;
         font-size: 12px;
+        white-space: nowrap;
     }
 
     td {
@@ -261,6 +361,10 @@ $gris: #6c757d;
     &.fila-alerta td {
         color: #e74c3c;
     }
+
+    @media (max-width: $tablet) {
+        min-width: 500px; // fuerza scroll horizontal en vez de romper el layout
+    }
 }
 
 .badge-stock {
@@ -270,6 +374,7 @@ $gris: #6c757d;
     border-radius: 20px;
     font-weight: 700;
     font-size: 12px;
+    white-space: nowrap;
 }
 
 .sin-datos {
@@ -283,4 +388,8 @@ $gris: #6c757d;
     text-align: center;
     padding: 60px;
     color: $gris;
+
+    @media (max-width: $movil) {
+        padding: 30px 16px;
+    }
 }

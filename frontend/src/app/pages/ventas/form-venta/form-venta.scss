@@ -6,12 +6,25 @@ $gris: #6c757d;
 $verde: #2e7d32;
 $rojo: #e74c3c;
 
+// Breakpoints
+$tablet: 768px;
+$movil: 480px;
+// El layout de 2 columnas (productos + carrito de 420px) necesita más aire que un
+// formulario normal antes de romperse, así que usamos un quiebre propio más ancho.
+$venta-break: 900px;
+
 .page-header {
     margin-bottom: 16px;
     h1 {
         font-size: 24px;
         font-weight: 700;
         color: $marron-oscuro;
+    }
+
+    @media (max-width: $movil) {
+        h1 {
+            font-size: 20px;
+        }
     }
 }
 
@@ -50,12 +63,21 @@ $rojo: #e74c3c;
     }
 }
 
+// LAYOUT PRINCIPAL: productos + carrito
+// En pantallas angostas, la columna fija de 420px para el carrito no cabe junto a los
+// productos, así que se apilan: productos arriba, carrito abajo, y se abandona la
+// altura fija (calc(100vh - 140px)) para dejar que la página crezca con scroll normal.
 .venta-layout {
     display: grid;
     grid-template-columns: 1fr 420px;
     gap: 20px;
     align-items: start;
     height: calc(100vh - 140px);
+
+    @media (max-width: $venta-break) {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
 }
 
 .card {
@@ -84,6 +106,11 @@ $rojo: #e74c3c;
     gap: 16px;
     height: 100%;
     overflow: hidden;
+
+    @media (max-width: $venta-break) {
+        height: auto;
+        overflow: visible;
+    }
 }
 
 .grid-productos {
@@ -102,6 +129,19 @@ $rojo: #e74c3c;
     &::-webkit-scrollbar-thumb {
         background: $beige;
         border-radius: 4px;
+    }
+
+    // En pantallas apiladas, la grilla de productos ya no necesita su propio scroll
+    // interno con altura limitada por el layout de 2 columnas: se deja crecer y
+    // scrollea junto con el resto de la página.
+    @media (max-width: $venta-break) {
+        overflow-y: visible;
+        max-height: none;
+    }
+
+    @media (max-width: $movil) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 }
 
@@ -171,6 +211,14 @@ $rojo: #e74c3c;
             background: $marron-oscuro;
         }
     }
+
+    @media (max-width: $movil) {
+        padding: 10px;
+
+        .producto-nombre {
+            font-size: 13px;
+        }
+    }
 }
 
 .sin-datos {
@@ -181,11 +229,18 @@ $rojo: #e74c3c;
 }
 
 // COLUMNA CARRITO
+// Al apilarse debajo de los productos, ya no tiene sentido que quede "sticky" ni con
+// altura fija a pantalla completa: pasa a comportarse como una card normal.
 .col-carrito {
     position: sticky;
     top: 0;
     height: calc(100vh - 140px);
     display: flex;
+
+    @media (max-width: $venta-break) {
+        position: static;
+        height: auto;
+    }
 }
 
 .carrito-card {
@@ -211,6 +266,11 @@ $rojo: #e74c3c;
         color: $marron-oscuro;
         margin-bottom: 12px;
         flex-shrink: 0;
+    }
+
+    @media (max-width: $venta-break) {
+        height: auto;
+        overflow-y: visible;
     }
 }
 
@@ -241,6 +301,13 @@ $rojo: #e74c3c;
     &::-webkit-scrollbar-thumb {
         background: $beige;
         border-radius: 4px;
+    }
+
+    // El carrito ya no vive dentro de una columna de altura restringida, pero se
+    // mantiene un tope razonable para que la lista de items no empuje demasiado
+    // el resto del formulario (cliente, método de pago, totales) fuera de vista.
+    @media (max-width: $venta-break) {
+        max-height: 260px;
     }
 }
 
@@ -319,6 +386,16 @@ $rojo: #e74c3c;
             opacity: 0.7;
         }
     }
+
+    // Botones de cantidad con un poco más de área táctil en móvil
+    @media (max-width: $movil) {
+        gap: 6px;
+
+        .btn-cant {
+            width: 26px;
+            height: 26px;
+        }
+    }
 }
 
 hr {
@@ -355,6 +432,7 @@ hr {
     font-size: 13px;
     color: $marron-oscuro;
     font-weight: 600;
+    gap: 8px;
 
     .btn-quitar-cliente {
         background: none;
@@ -474,6 +552,10 @@ hr {
     &:disabled {
         background: #ccc;
         cursor: not-allowed;
+    }
+
+    @media (max-width: $movil) {
+        padding: 14px; // botón final más grande, es la acción principal del flujo
     }
 }
 
